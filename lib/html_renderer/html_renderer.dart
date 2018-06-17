@@ -1,5 +1,4 @@
 import 'dart:html';
-import 'package:nuts/controls/controls.dart';
 import 'package:nuts/nuts.dart';
 
 final HtmlRenderer defaultRenderers = new HtmlRenderer()
@@ -19,11 +18,23 @@ final HtmlRenderer defaultRenderers = new HtmlRenderer()
   ..register<LabeledIntEdit>(labeledIntEditRenderer)
   ..register<Form>(formRenderer);
 
-void renderWidth(final Element el, final View view) {
+void _handleWidth(final Element el, final View view) {
   if (view is ViewWithWidth) {
     if (view.width != null) el.style.width = view.width.toString();
     if (view.minWidth != null) el.style.minWidth = view.minWidth.toString();
     if (view.maxWidth != null) el.style.maxWidth = view.maxWidth.toString();
+  }
+}
+
+void _handleClasses(final Element el, final View view) {
+  if(view is ViewWithClasses) {
+    view.classes.onChange.listen((e) {
+      if(e.op == SetChangeOp.add) {
+        el.classes.add(e.element);
+      } else {
+        el.classes.remove(e.element);
+      }
+    });
   }
 }
 
@@ -38,7 +49,8 @@ Element textEditRenderer(final field, Renderer<Element> renderers) {
     field.setValue = (v) {
       ret.value = v ?? '';
     };
-    renderWidth(ret, field);
+    _handleWidth(ret, field);
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -51,7 +63,8 @@ Element labeledTextEditRenderer(final field, Renderer<Element> renderers) {
       field.editField,
     ]))
       ..classes.addAll(['labeled', 'labeled-textinput']);
-    renderWidth(ret, field);
+    _handleWidth(ret, field);
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -67,7 +80,8 @@ Element intEditRenderer(final field, Renderer<Element> renderers) {
     field.readValue = () => int.tryParse(ret.value);
     void setValue(int v) => ret.value = v?.toString() ?? '';
     field.setValue = setValue;
-    renderWidth(ret, field);
+    _handleWidth(ret, field);
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -80,7 +94,8 @@ Element labeledIntEditRenderer(final field, Renderer<Element> renderers) {
       field.editField,
     ]))
       ..classes.addAll(['labeled', 'labeled-textinput']);
-    renderWidth(ret, field);
+    _handleWidth(ret, field);
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -98,7 +113,8 @@ Element textFieldRenderer(final field, _) {
     if (field.onClick != null) ret.onClick.listen((_) => field.onClick());
     field.textProperty = ValueFunc<String>(
         getter: () => ret.text, setter: (String v) => ret.text = v ?? '');
-    renderWidth(ret, field);
+    _handleWidth(ret, field);
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -109,7 +125,8 @@ Element intFieldRenderer(final field, _) {
     var ret = new DivElement()
       ..classes.addAll(['textfield', 'textfield-int'])
       ..text = field.text.toString();
-    renderWidth(ret, field);
+    _handleWidth(ret, field);
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -122,7 +139,8 @@ Element labeledTextFieldRenderer(final field, Renderer<Element> renderers) {
       field.textField,
     ]))
       ..classes.addAll(['labeled', 'labeled-textfield']);
-    renderWidth(ret, field);
+    _handleWidth(ret, field);
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -135,7 +153,8 @@ Element vLabeledTextFieldRenderer(final field, Renderer<Element> renderers) {
       field.textField,
     ]))
       ..classes.addAll(['vlabeled', 'vlabeled-textfield']);
-    renderWidth(ret, field);
+    _handleWidth(ret, field);
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -148,7 +167,8 @@ Element labeledIntFieldRenderer(final field, Renderer<Element> renderers) {
       field.intField,
     ]))
       ..classes.addAll(['labeled', 'labeled-textfield']);
-    renderWidth(ret, field);
+    _handleWidth(ret, field);
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -161,7 +181,8 @@ Element vLabeledIntFieldRenderer(final field, Renderer<Element> renderers) {
       field.textField,
     ]))
       ..classes.addAll(['vlabeled', 'vlabeled-textfield']);
-    renderWidth(ret, field);
+    _handleWidth(ret, field);
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -213,14 +234,15 @@ Element boxRenderer(final field, Renderer<Element> renderers) {
       ret.style.alignItems = hAlignToCssAlignItems(field.hAlign);
     if (field.pad != null) _padElement(ret, field.pad);
     if (field.margin != null) _marginElement(ret, field.margin);
-    field.children.onChange = (View element, ListChangeOp op, int pos) {
-      if (op == ListChangeOp.add)
-        ret.children.insert(pos, renderers.render(element));
-      else if (op == ListChangeOp.remove)
-        ret.children.removeAt(pos);
+    field.children.onChange.listen((e) {
+      if (e.op == ListChangeOp.add)
+        ret.children.insert(e.pos, renderers.render(e.element));
+      else if (e.op == ListChangeOp.remove)
+        ret.children.removeAt(e.pos);
       else
         ret.children.clear();
-    };
+    });
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -288,14 +310,15 @@ Element hBoxRenderer(final field, Renderer<Element> renderers) {
       ret.style.justifyContent = hAlignToCssJustifyContent(field.hAlign);
     if (field.pad != null) _padElement(ret, field.pad);
     if (field.margin != null) _marginElement(ret, field.margin);
-    field.children.onChange = (View element, ListChangeOp op, int pos) {
-      if (op == ListChangeOp.add)
-        ret.children.insert(pos, renderers.render(element));
-      else if (op == ListChangeOp.remove)
-        ret.children.removeAt(pos);
+    field.children.onChange.listen((e) {
+      if (e.op == ListChangeOp.add)
+        ret.children.insert(e.pos, renderers.render(e.element));
+      else if (e.op == ListChangeOp.remove)
+        ret.children.removeAt(e.pos);
       else
         ret.children.clear();
-    };
+    });
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -311,7 +334,9 @@ Element buttonRenderer(final field, Renderer<Element> renderers) {
     if (field.fontSize != null) ret.style.fontSize = '${field.fontSize}px';
     if (field.tip != null) ret.title = field.tip;
     if (field.onClick != null) ret.onClick.listen((_) => field.onClick());
-    renderWidth(ret, field);
+    ret.classes.addAll(field.classes);
+    _handleWidth(ret, field);
+    _handleClasses(ret, field);
     return ret;
   }
   throw new Exception();
@@ -346,6 +371,7 @@ Element tableRenderer(final field, Renderer<Element> renderers) {
       }
       body.append(el);
     }
+    // TODO classes
     return new DivElement()
       ..classes.add('jaguar-admin-table-frame')
       ..append(new TableElement()
@@ -366,7 +392,7 @@ Element formRenderer(final field, Renderer<Element> renderers) {
       children: field.children,
     ))
       ..classes.add('form');
-    renderWidth(ret, field);
+    _handleWidth(ret, field);
     return ret;
   }
   throw new Exception();

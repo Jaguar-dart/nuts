@@ -1,4 +1,4 @@
-import 'package:nuts/controls/controls.dart';
+import 'package:nuts/controls/view.dart';
 
 // TODO:
 // 1) Sortable

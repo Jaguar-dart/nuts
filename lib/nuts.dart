@@ -1,6 +1,7 @@
-import 'package:nuts/controls/controls.dart';
+import 'package:nuts/controls/view.dart';
 
-export 'package:nuts/controls/controls.dart';
+export 'package:nuts/controls/view.dart';
+export 'package:nuts/collection/collection.dart';
 
 typedef E ViewRenderer<E, T extends View>(view, Renderer<E> renderers);
 

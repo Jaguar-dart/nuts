@@ -1,4 +1,4 @@
-import 'package:nuts/controls/controls.dart';
+import 'package:nuts/nuts.dart';
 
 abstract class EditView<T> implements View {
   ValueGetter<T> readValue;
