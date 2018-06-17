@@ -1,0 +1,59 @@
+.box {
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.hbox {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.button {
+    cursor: pointer;
+    filter: brightness(100%) drop-shadow(0px 0px 0px);
+    transition: filter 0.2s;
+    padding: 2px 5px;
+    font-family: 'fa5-free', sans-serif;
+    user-select: none;
+}
+
+.button:hover {
+    filter: brightness(125%);
+}
+
+.button:active {
+    filter: drop-shadow(1px 1px 1px);
+}
+
+.textfield {
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+.textinput {
+    border-radius: 4px;
+    border: 1px solid #00000029;
+    padding: 3px 5px;
+    outline: none;
+    transition: border-color 0.5s, box-shadow 0.5s;
+}
+
+.textinput:hover {
+    box-shadow: inset 1px 2px 2px 0px #0000001f;
+}
+
+.textinput:focus {
+    border-color: #3F51B5;
+    box-shadow: inset 1px 2px 2px 0px #0000001f;
+}
+
+.labeled {
+    padding: 5px;
+}
+
+.labeled .label {
+    margin-right: 10px;
+    font-size: 12px;
+}
