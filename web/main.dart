@@ -12,7 +12,7 @@ class Counter implements Component {
   View makeView() {
     Box ret;
     ret = Box(children: [
-      TextField('Count: $count', key: 'info'),
+      TextField(text: 'Count: $count', key: 'info'),
       HBox(children: [
         Button(
             text: 'Increment',

@@ -6,6 +6,8 @@ export 'package:nuts/collection/collection.dart';
 typedef E ViewRenderer<E, T extends View>(view, Renderer<E> renderers);
 
 abstract class Renderer<E> {
+  Iterable<ViewRenderer<E, View>> get allRenderers;
+
   void register<T extends View>(ViewRenderer<E, T> renderer);
 
   ViewRenderer<E, T> get<T extends View>();
@@ -17,6 +19,16 @@ abstract class Renderer<E> {
     if (view is Component) return render(view.makeView());
     ViewRenderer<E, View> ren = getFor(view);
     if (ren != null) return ren(view, this);
+    // Handle types with generic arguments
+    for(ViewRenderer<E, View> r in allRenderers) {
+      try {
+        E ret = r(view, this);
+        return ret;
+      } catch(e) {
+        // print('$r:');
+        // print(e);
+      }
+    }
     throw new Exception("A renderer for ${view.runtimeType} not found!");
   }
 

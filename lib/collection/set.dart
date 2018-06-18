@@ -26,21 +26,31 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
 
   bool add(E element) {
     bool ret = super.add(element);
-    if (ret) _changes.add(SetChangeNotification<E>.add(element));
+    if (ret) {
+      if (_changes.hasListener) {
+        _changes.add(SetChangeNotification<E>.add(element));
+      }
+    }
     return ret;
   }
 
   bool remove(Object element) {
     bool hasRemoved = super.remove(element);
-    if (hasRemoved) _changes.add(SetChangeNotification<E>.remove(element));
+    if (hasRemoved) {
+      if (_changes.hasListener) {
+        _changes.add(SetChangeNotification<E>.remove(element));
+      }
+    }
     return hasRemoved;
   }
 
   void clear() {
     Iterable<E> removed = toList();
     super.clear();
-    for (E el in removed) {
-      _changes.add(SetChangeNotification<E>.remove(el));
+    if (_changes.hasListener) {
+      for (E el in removed) {
+        _changes.add(SetChangeNotification<E>.remove(el));
+      }
     }
   }
 

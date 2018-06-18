@@ -3,7 +3,7 @@ import 'package:collection/collection.dart';
 import 'collection.dart';
 
 class IfList<E> extends DelegatingList<E> implements List<E> {
-  IfList([int length]) : super(List<E>(length));
+  IfList([int length]) : super(length != null ? List<E>(length) : List<E>());
 
   IfList.filled(int length, E fill, {bool growable: false})
       : super(List<E>.filled(length, fill, growable: growable));
@@ -32,22 +32,36 @@ class IfList<E> extends DelegatingList<E> implements List<E> {
     if (condition is bool && condition) addAll(elements);
   }
 
+  operator []=(int index, E value) {
+    super[index] = value;
+    if (_changes.hasListener) {
+      _changes.add(ListChangeNotification<E>.set(value, index));
+    }
+  }
+
   void add(E element) {
     super.add(element);
-    _changes.add(ListChangeNotification<E>.add(element, length - 1));
+    if (_changes.hasListener) {
+      _changes.add(ListChangeNotification<E>.add(element, length - 1));
+    }
   }
 
   bool remove(Object element) {
     int pos = indexOf(element);
     bool hasRemoved = super.remove(element);
-    if (hasRemoved)
-      _changes.add(ListChangeNotification<E>.remove(element, pos));
+    if (hasRemoved) {
+      if (_changes.hasListener) {
+        _changes.add(ListChangeNotification<E>.remove(element, pos));
+      }
+    }
     return hasRemoved;
   }
 
   void clear() {
     super.clear();
-    _changes.add(ListChangeNotification<E>.clear());
+    if (_changes.hasListener) {
+      _changes.add(ListChangeNotification<E>.clear());
+    }
   }
 
   void assign(E element) {
@@ -61,12 +75,17 @@ class IfList<E> extends DelegatingList<E> implements List<E> {
   }
 
   Stream<ListChangeNotification<E>> get onChange =>
-      _changes.stream.asBroadcastStream();
+      _changesStream.skipWhile((c) => c.time.isBefore(DateTime.now()));
+
+  Stream<ListChangeNotification<E>> __changesStream;
+
+  Stream<ListChangeNotification<E>> get _changesStream =>
+      __changesStream ??= _changes.stream.asBroadcastStream();
 
   final _changes = StreamController<ListChangeNotification<E>>();
 }
 
-enum ListChangeOp { add, remove, clear }
+enum ListChangeOp { add, remove, clear, set }
 
 typedef dynamic ListChangeCallBack<E>(E element, ListChangeOp isAdd, int pos);
 
@@ -77,15 +96,26 @@ class ListChangeNotification<E> {
 
   final int pos;
 
-  ListChangeNotification(this.element, this.op, this.pos);
+  final DateTime time;
 
-  ListChangeNotification.add(this.element, this.pos) : op = ListChangeOp.add;
+  ListChangeNotification(this.element, this.op, this.pos, {DateTime time})
+      : time = time ?? new DateTime.now();
 
-  ListChangeNotification.remove(this.element, this.pos)
-      : op = ListChangeOp.remove;
+  ListChangeNotification.add(this.element, this.pos, {DateTime time})
+      : op = ListChangeOp.add,
+        time = time ?? new DateTime.now();
 
-  ListChangeNotification.clear()
+  ListChangeNotification.set(this.element, this.pos, {DateTime time})
+      : op = ListChangeOp.set,
+        time = time ?? new DateTime.now();
+
+  ListChangeNotification.remove(this.element, this.pos, {DateTime time})
+      : op = ListChangeOp.remove,
+        time = time ?? new DateTime.now();
+
+  ListChangeNotification.clear({DateTime time})
       : op = ListChangeOp.clear,
         pos = null,
-        element = null;
+        element = null,
+        time = time ?? new DateTime.now();
 }

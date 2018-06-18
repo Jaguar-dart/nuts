@@ -12,24 +12,25 @@ class TextField implements View, ViewWithWidth {
 
   final Callback onClick;
 
-  TextField(String text,
-      {this.bold: false,
-        this.key,
-        this.fontFamily,
-        this.color,
-        String class_,
-        Iterable<String> classes,
-        this.width,
-        this.minWidth,
-        this.maxWidth,
-        this.onClick})
+  TextField(
+      {/* String | Stream<String> | Reactive<String> */ text,
+      this.bold: false,
+      this.key,
+      this.fontFamily,
+      this.color,
+      String class_,
+      Iterable<String> classes,
+      this.width,
+      this.minWidth,
+      this.maxWidth,
+      this.onClick})
       : classes = IfSet<String>.union(classes, class_) {
-    textProperty.setter(text);
+    textProperty.setHowever(text);
   }
 
-  Value<String> textProperty = DummyValue<String>();
-  String get text => textProperty.getter();
-  set text(String value) => textProperty.setter(value);
+  final textProperty = BackedReactive<String>();
+  String get text => textProperty.get;
+  set text(String value) => textProperty.set = value;
 }
 
 abstract class LabeledView implements View {
@@ -49,14 +50,14 @@ class LabeledTextField implements HLabeledView {
 
   LabeledTextField(
       {String label,
-        TextField labelField,
-        TextField textField,
-        String text,
-        this.height,
-        this.vAlign,
-        this.key})
-      : textField = textField ?? TextField(text),
-        labelField = labelField ?? TextField(label) {
+      TextField labelField,
+      TextField textField,
+      String text,
+      this.height,
+      this.vAlign,
+      this.key})
+      : textField = textField ?? TextField(text: text),
+        labelField = labelField ?? TextField(text: label) {
     this.labelField.classes.add('label');
   }
 }
@@ -70,14 +71,14 @@ class VLabeledTextField implements VLabeledView {
 
   VLabeledTextField(
       {String label,
-        TextField labelField,
-        TextField textField,
-        String text,
-        this.width,
-        this.hAlign,
-        this.key})
-      : textField = textField ?? TextField(text),
-        labelField = labelField ?? TextField(label) {
+      TextField labelField,
+      TextField textField,
+      String text,
+      this.width,
+      this.hAlign,
+      this.key})
+      : textField = textField ?? TextField(text: text),
+        labelField = labelField ?? TextField(text: label) {
     this.labelField.classes.add('label');
   }
 }
@@ -99,14 +100,14 @@ class LabeledIntField implements HLabeledView {
 
   LabeledIntField(
       {String label,
-        TextField labelField,
-        IntField intField,
-        int text,
-        this.height,
-        this.vAlign,
-        this.key})
+      TextField labelField,
+      IntField intField,
+      int text,
+      this.height,
+      this.vAlign,
+      this.key})
       : intField = intField ?? IntField(text),
-        labelField = labelField ?? TextField(label) {
+        labelField = labelField ?? TextField(text: label) {
     this.labelField.classes.add('label');
   }
 }
@@ -120,14 +121,14 @@ class VLabeledIntField implements VLabeledView {
 
   VLabeledIntField(
       {String label,
-        TextField labelField,
-        IntField intField,
-        int text,
-        this.width,
-        this.hAlign,
-        this.key})
+      TextField labelField,
+      IntField intField,
+      int text,
+      this.width,
+      this.hAlign,
+      this.key})
       : intField = intField ?? IntField(text),
-        labelField = labelField ?? TextField(label) {
+        labelField = labelField ?? TextField(text: label) {
     this.labelField.classes.add('label');
   }
 }
@@ -149,17 +150,17 @@ class Button implements View {
 
   Button(
       {this.icon,
-        this.text,
-        this.onClick,
-        this.tip,
-        this.color: blue,
-        this.fontSize,
-        this.key,
-        String class_,
-        Iterable<String> classes})
+      this.text,
+      this.onClick,
+      this.tip,
+      this.color: blue,
+      this.fontSize,
+      this.key,
+      String class_,
+      Iterable<String> classes})
       : classes = classes is IfSet<String>
-      ? classes
-      : IfSet<String>.union(classes, class_);
+            ? classes
+            : IfSet<String>.union(classes, class_);
 
   static const String blue = '#2687c1';
 

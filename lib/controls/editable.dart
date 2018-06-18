@@ -67,7 +67,7 @@ class LabeledTextEdit implements EditView<String>, HLabeledView {
       this.key})
       : editField =
             editField ?? TextEdit(initial: initial, placeholder: placeholder),
-        labelField = labelField ?? TextField(label) {
+        labelField = labelField ?? TextField(text: label) {
     this.labelField.classes.add('label');
   }
 
@@ -98,7 +98,7 @@ class LabeledIntEdit implements EditView<int>, HLabeledView {
       this.key})
       : editField =
             editField ?? IntEdit(initial: initial, placeholder: placeholder),
-        labelField = labelField ?? TextField(label) {
+        labelField = labelField ?? TextField(text: label) {
     this.labelField.classes.add('label');
   }
 

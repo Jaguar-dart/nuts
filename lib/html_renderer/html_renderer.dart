@@ -16,7 +16,8 @@ final HtmlRenderer defaultRenderers = new HtmlRenderer()
   ..register<LabeledTextEdit>(labeledTextEditRenderer)
   ..register<IntEdit>(intEditRenderer)
   ..register<LabeledIntEdit>(labeledIntEditRenderer)
-  ..register<Form>(formRenderer);
+  ..register<Form>(formRenderer)
+  ..register<VariableView>(variableViewRenderer);
 
 void _handleWidth(final Element el, final View view) {
   if (view is ViewWithWidth) {
@@ -27,15 +28,28 @@ void _handleWidth(final Element el, final View view) {
 }
 
 void _handleClasses(final Element el, final View view) {
-  if(view is ViewWithClasses) {
+  if (view is ViewWithClasses) {
     view.classes.onChange.listen((e) {
-      if(e.op == SetChangeOp.add) {
+      if (e.op == SetChangeOp.add) {
         el.classes.add(e.element);
       } else {
         el.classes.remove(e.element);
       }
     });
   }
+}
+
+Element variableViewRenderer(final field, Renderer<Element> renderers) {
+  if (field is VariableView) {
+    Element el = renderers.render(field.makeView(field.initial));
+    field.rebuildOn.listen((v) {
+      Element newEl = renderers.render(field.makeView(v));
+      el.replaceWith(newEl);
+      el = newEl;
+    });
+    return el;
+  }
+  throw new Exception();
 }
 
 Element textEditRenderer(final field, Renderer<Element> renderers) {
@@ -111,8 +125,8 @@ Element textFieldRenderer(final field, _) {
     if (field.fontFamily != null) ret.style.fontFamily = field.fontFamily;
     if (field.color != null) ret.style.color = field.color;
     if (field.onClick != null) ret.onClick.listen((_) => field.onClick());
-    field.textProperty = ValueFunc<String>(
-        getter: () => ret.text, setter: (String v) => ret.text = v ?? '');
+    field.textProperty.getter = () => ret.text;
+    field.textProperty.newValues.listen((v) => ret.text = v ?? '');
     _handleWidth(ret, field);
     _handleClasses(ret, field);
     return ret;
@@ -237,6 +251,8 @@ Element boxRenderer(final field, Renderer<Element> renderers) {
     field.children.onChange.listen((e) {
       if (e.op == ListChangeOp.add)
         ret.children.insert(e.pos, renderers.render(e.element));
+      else if (e.op == ListChangeOp.set)
+        ret.children[e.pos] = renderers.render(e.element);
       else if (e.op == ListChangeOp.remove)
         ret.children.removeAt(e.pos);
       else
@@ -294,9 +310,7 @@ Element hBoxRenderer(final field, Renderer<Element> renderers) {
   if (field is HBox) {
     var ret = new DivElement()..classes.add('hbox');
     ret.classes.addAll(field.classes);
-    for (View child in field.children) {
-      ret.append(renderers.render(child));
-    }
+    for (View child in field.children) ret.append(renderers.render(child));
     if (field.width != null) {
       if (field.width is FlexSize) {
         ret.style.flex = field.width.toString();
@@ -313,6 +327,8 @@ Element hBoxRenderer(final field, Renderer<Element> renderers) {
     field.children.onChange.listen((e) {
       if (e.op == ListChangeOp.add)
         ret.children.insert(e.pos, renderers.render(e.element));
+      else if (e.op == ListChangeOp.set)
+        ret.children[e.pos] = renderers.render(e.element);
       else if (e.op == ListChangeOp.remove)
         ret.children.removeAt(e.pos);
       else
@@ -350,7 +366,7 @@ Element tableRenderer(final field, Renderer<Element> renderers) {
       ColumnSpec spec = field.spec[i];
       var th = new Element.th()
         ..classes.add('jaguar-admin-table-head-item')
-        ..append(renderers.render(TextField(spec.label)));
+        ..append(renderers.render(TextField(text: spec.label)));
       if (spec.width != null) th.style.width = spec.width.toString();
       header.append(th);
     }
@@ -365,8 +381,8 @@ Element tableRenderer(final field, Renderer<Element> renderers) {
         if (v != null) {
           el.append(new TableCellElement()..append(renderers.render(v)));
         } else {
-          el.append(
-              new TableCellElement()..append(renderers.render(TextField(""))));
+          el.append(new TableCellElement()
+            ..append(renderers.render(TextField(text: ""))));
         }
       }
       body.append(el);
@@ -400,6 +416,9 @@ Element formRenderer(final field, Renderer<Element> renderers) {
 
 class HtmlRenderer extends Renderer<Element> {
   final _renderers = <Type, ViewRenderer<Element, View>>{};
+
+  @override
+  Iterable<ViewRenderer<Element, View>> get allRenderers => _renderers.values;
 
   void register<T extends View>(ViewRenderer<Element, View> renderer) {
     _renderers[T] = renderer;
