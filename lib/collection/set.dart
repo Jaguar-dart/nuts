@@ -3,16 +3,23 @@ import 'package:collection/collection.dart';
 import 'collection.dart';
 
 class IfSet<E> extends DelegatingSet<E> implements Set<E> {
-  IfSet() : super(new Set<E>());
+  IfSet() : super(new Set<E>()) {
+    _onChange = _changes.stream.asBroadcastStream();
+  }
 
-  IfSet.from(Iterable elements) : super(Set<E>.from(elements));
+  IfSet.from(Iterable elements) : super(Set<E>.from(elements)) {
+    _onChange = _changes.stream.asBroadcastStream();
+  }
 
   IfSet.union(Iterable<E> elements, [E element])
       : super(Set<E>.from(elements ?? <E>[])) {
     if (element != null) add(element);
+    _onChange = _changes.stream.asBroadcastStream();
   }
 
-  IfSet.of(Iterable<E> elements) : super(Set<E>.of(elements));
+  IfSet.of(Iterable<E> elements) : super(Set<E>.of(elements)) {
+    _onChange = _changes.stream.asBroadcastStream();
+  }
 
   void addIf(/* bool | Condition */ condition, E element) {
     if (condition is Condition) condition = condition();
@@ -27,9 +34,7 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
   bool add(E element) {
     bool ret = super.add(element);
     if (ret) {
-      if (_changes.hasListener) {
-        _changes.add(SetChangeNotification<E>.add(element));
-      }
+      _changes.add(SetChangeNotification<E>.add(element));
     }
     return ret;
   }
@@ -37,9 +42,7 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
   bool remove(Object element) {
     bool hasRemoved = super.remove(element);
     if (hasRemoved) {
-      if (_changes.hasListener) {
-        _changes.add(SetChangeNotification<E>.remove(element));
-      }
+      _changes.add(SetChangeNotification<E>.remove(element));
     }
     return hasRemoved;
   }
@@ -47,19 +50,23 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
   void clear() {
     Iterable<E> removed = toList();
     super.clear();
-    if (_changes.hasListener) {
-      for (E el in removed) {
-        _changes.add(SetChangeNotification<E>.remove(el));
-      }
+    for (E el in removed) {
+      _changes.add(SetChangeNotification<E>.remove(el));
     }
   }
 
-  Stream<SetChangeNotification<E>> get onChange =>
-      _changes.stream.asBroadcastStream();
+  Stream<SetChangeNotification<E>> _onChange;
+
+  Stream<SetChangeNotification<E>> get onChange => _onChange;
 
   final _changes = StreamController<SetChangeNotification<E>>();
 
-  void bindBool(E element, Stream<bool> stream) {
+  void bindBool(E element, Stream<bool> stream, [bool initial = false]) {
+    if (initial) {
+      add(element);
+    } else {
+      remove(element);
+    }
     stream.listen((bool value) {
       if (value)
         add(element);
@@ -68,7 +75,12 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
     });
   }
 
-  void bindReactive(E element, Reactive<bool> other) {
+  void bindBoolReactive(E element, Reactive<bool> other) {
+    if (other.value) {
+      add(element);
+    } else {
+      remove(element);
+    }
     other.values.listen((bool value) {
       if (value)
         add(element);

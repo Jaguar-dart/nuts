@@ -8,20 +8,21 @@ typedef bool Condition();
 
 typedef T ValueGetter<T>();
 
-typedef void ValueSetter<T>(T value);
+typedef void ValueSetter<T>(T val);
 
 class Change<T> {
   final T old;
   final T neu;
   Change(this.neu, this.old);
+  String toString() => 'Change(new: $neu, old: $old)';
 }
 
 abstract class Reactive<T> {
-  T get get;
+  T get value;
 
-  set set(T value);
+  set value(T val);
 
-  void setCast(dynamic /* T */ value);
+  void setCast(dynamic /* T */ val);
 
   Stream<Change<T>> get onChange;
 
@@ -34,37 +35,49 @@ abstract class Reactive<T> {
   void bind(Reactive<T> reactive);
 
   void bindStream(Stream<T> stream);
+
+  StreamSubscription<T> listen(void callback(T data));
+
+  Stream<R> map<R>(R mapper(T data));
+
+  // TODO where
 }
 
 class StoredReactive<T> implements Reactive<T> {
   T _value;
-  T get get => _value;
+  T get value => _value;
   final _change = new StreamController<Change<T>>();
-  set set(T value) {
-    if (_value == value) return;
+  set value(T val) {
+    if (_value == val) return;
     T old = _value;
-    _value = value;
-    _change.add(Change<T>(value, old));
+    _value = val;
+    _change.add(Change<T>(val, old));
   }
 
   StoredReactive({T initial}) : _value = initial {
     _onChange = _change.stream.asBroadcastStream();
   }
 
-  void setCast(dynamic /* T */ value) => set = value;
+  void setCast(dynamic /* T */ val) => value = val;
 
   Stream<Change<T>> _onChange;
 
-  Stream<Change<T>> get onChange => _onChange;
+  Stream<Change<T>> get onChange {
+    final ret = StreamController<Change<T>>();
+    ret.add(Change<T>(value, null));
+    _onChange.listen((v) => ret.add(v));
+    return ret.stream.asBroadcastStream();
+  }
 
-  Stream<T> get values => _onChange.map((c) => c.neu);
+  Stream<T> get values => onChange.map((c) => c.neu);
 
   void bind(Reactive<T> reactive) {
-    reactive.values.listen((v) => set = v);
+    value = reactive.value;
+    reactive.values.listen((v) => value = v);
   }
 
   void bindStream(Stream<T> stream) {
-    stream.listen((v) => set = v);
+    stream.listen((v) => value = v);
   }
 
   void setHowever(/* T | Stream<T> | Reactive<T> */ other) {
@@ -73,9 +86,14 @@ class StoredReactive<T> implements Reactive<T> {
     } else if (other is Stream<T>) {
       bindStream(other.cast<T>());
     } else {
-      set = other;
+      value = other;
     }
   }
+
+  StreamSubscription<T> listen(void callback(T data)) =>
+      values.listen(callback);
+
+  Stream<R> map<R>(R mapper(T data)) => values.map(mapper);
 }
 
 class BackedReactive<T> implements Reactive<T> {
@@ -87,29 +105,34 @@ class BackedReactive<T> implements Reactive<T> {
 
   static T _defGetter<T>() => null;
 
-  T get get => getter();
-  set set(T value) {
-    T old = get;
-    if (old == value) return;
-    _change.add(Change<T>(value, old));
+  T get value => getter();
+  set value(T val) {
+    T old = value;
+    if (old == val) return;
+    _change.add(Change<T>(val, old));
   }
 
-  void setCast(dynamic /* T */ value) => set = value;
+  void setCast(dynamic /* T */ val) => value = val;
 
   Stream<Change<T>> _onChange;
 
-  Stream<Change<T>> get onChange => _onChange;
+  Stream<Change<T>> get onChange {
+    final ret = StreamController<Change<T>>();
+    ret.add(Change<T>(value, null));
+    _onChange.listen((v) => ret.add(v));
+    var ret1 = ret.stream.asBroadcastStream();
+    return ret1;
+  }
 
-  Stream<T> get values => _onChange.map((c) => c.neu);
+  Stream<T> get values => onChange.map((c) => c.neu);
 
   void bind(Reactive<T> reactive) {
-    reactive.values.listen((v) {
-      set = v;
-    });
+    value = reactive.value;
+    reactive.values.listen((v) => value = v);
   }
 
   void bindStream(Stream<T> stream) {
-    stream.listen((v) => set = v);
+    stream.listen((v) => value = v);
   }
 
   void setHowever(/* T | Stream<T> | Reactive<T> */ other) {
@@ -118,7 +141,12 @@ class BackedReactive<T> implements Reactive<T> {
     } else if (other is Stream<T>) {
       bindStream(other.cast<T>());
     } else {
-      set = other;
+      value = other;
     }
   }
+
+  StreamSubscription<T> listen(void callback(T data)) =>
+      values.listen(callback);
+
+  Stream<R> map<R>(R mapper(T data)) => values.map(mapper);
 }

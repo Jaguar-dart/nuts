@@ -21,8 +21,11 @@ class Box implements Container, ViewWithClasses {
       this.vAlign,
       this.pad,
       this.margin})
-      : children = IfList<View>.union(children, child),
+      : children = children is RxChildList
+            ? children
+            : IfList<View>.union(children, child),
         classes = IfSet<String>.union(classes, class_) {
+    if (children is RxChildList) children.addNonNull(child);
     widthProperty.setHowever(width);
     heightProperty.setHowever(height);
     backgroundColorProperty.setHowever(backgroundColor);
@@ -32,15 +35,15 @@ class Box implements Container, ViewWithClasses {
   void addChildren(Iterable<View> v) => children.addAll(v);
 
   final widthProperty = BackedReactive<Size>();
-  Size get width => widthProperty.get;
-  set width(Size value) => widthProperty.set = value;
+  Size get width => widthProperty.value;
+  set width(Size value) => widthProperty.value = value;
   final heightProperty = BackedReactive<Size>();
-  Size get height => heightProperty.get;
-  set height(Size value) => heightProperty.set = value;
+  Size get height => heightProperty.value;
+  set height(Size value) => heightProperty.value = value;
 
   final backgroundColorProperty = BackedReactive<String>();
-  String get backgroundColor => backgroundColorProperty.get;
-  set backgroundColor(String value) => backgroundColorProperty.set = value;
+  String get backgroundColor => backgroundColorProperty.value;
+  set backgroundColor(String value) => backgroundColorProperty.value = value;
 
   T getByKey<T extends View>(String key) =>
       children.firstWhere((v) => v.key == key, orElse: () => null);
@@ -79,21 +82,29 @@ class HBox implements Container, ViewWithClasses {
       this.vAlign: VAlign.middle,
       this.pad,
       this.margin})
-      : children = IfList<View>.union(children, child),
-        classes = IfSet<String>.union(classes, class_);
+      : children = children is RxChildList
+            ? children
+            : IfList<View>.union(children, child),
+        classes = IfSet<String>.union(classes, class_) {
+    if (children is RxChildList) children.addNonNull(child);
+    widthProperty.setHowever(width);
+    heightProperty.setHowever(height);
+    backgroundColorProperty.setHowever(backgroundColor);
+  }
+
   void addChild(View v) => children.add(v);
   void addChildren(Iterable<View> v) => children.addAll(v);
 
   final widthProperty = BackedReactive<Size>();
-  Size get width => widthProperty.get;
-  set width(Size value) => widthProperty.set = value;
+  Size get width => widthProperty.value;
+  set width(Size value) => widthProperty.value = value;
   final heightProperty = BackedReactive<Size>();
-  Size get height => heightProperty.get;
-  set height(Size value) => heightProperty.set = value;
+  Size get height => heightProperty.value;
+  set height(Size value) => heightProperty.value = value;
 
   final backgroundColorProperty = BackedReactive<String>();
-  String get backgroundColor => backgroundColorProperty.get;
-  set backgroundColor(String value) => backgroundColorProperty.set = value;
+  String get backgroundColor => backgroundColorProperty.value;
+  set backgroundColor(String value) => backgroundColorProperty.value = value;
 
   T getByKey<T extends View>(String key) =>
       children.firstWhere((v) => v.key == key, orElse: () => null);

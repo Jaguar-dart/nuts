@@ -234,25 +234,25 @@ Element boxRenderer(final field, Renderer<Element> renderers) {
   if (field is Box) {
     var ret = new DivElement()..classes.add('box');
     ret.classes.addAll(field.classes);
-    for (View child in field.children) ret.append(renderers.render(child));
+    // TODO for (View child in field.children) ret.append(renderers.render(child));
 
-    field.widthProperty.getter = () => FixedSize(ret.offsetWidth);
     field.widthProperty.values.listen((Size width) {
       ret.style.width = width.toString();
     });
-    field.heightProperty.getter = () => FixedSize(ret.offsetHeight);
+    field.widthProperty.getter = () => FixedSize(ret.offsetWidth);
     field.heightProperty.values.listen((Size height) {
       if (height is FlexSize) {
         ret.style.flex = height.toString();
-      } else {
+      } else if(height != null) {
         ret.style.height = height.toString();
       }
     });
+    field.heightProperty.getter = () => FixedSize(ret.offsetHeight);
 
-    field.backgroundColorProperty.getter = () => ret.style.backgroundColor;
     field.backgroundColorProperty.values.listen((String value) {
       ret.style.backgroundColor = value;
     });
+    field.backgroundColorProperty.getter = () => ret.style.backgroundColor;
 
     if (field.vAlign != null)
       ret.style.justifyContent = vAlignToCssJustifyContent(field.vAlign);
@@ -322,25 +322,26 @@ Element hBoxRenderer(final field, Renderer<Element> renderers) {
   if (field is HBox) {
     var ret = new DivElement()..classes.add('hbox');
     ret.classes.addAll(field.classes);
-    for (View child in field.children) ret.append(renderers.render(child));
+    // TODO for (View child in field.children) ret.append(renderers.render(child));
 
-    field.widthProperty.getter = () => FixedSize(ret.offsetWidth);
     field.widthProperty.values.listen((Size width) {
       if (width is FlexSize) {
         ret.style.flex = width.toString();
-      } else {
+      } else if(width != null) {
         ret.style.width = width.toString();
       }
     });
-    field.heightProperty.getter = () => FixedSize(ret.offsetHeight);
+    field.widthProperty.getter = () => FixedSize(ret.offsetWidth);
+
     field.heightProperty.values.listen((Size height) {
       ret.style.height = height.toString();
     });
+    field.heightProperty.getter = () => FixedSize(ret.offsetHeight);
 
-    field.backgroundColorProperty.getter = () => ret.style.backgroundColor;
     field.backgroundColorProperty.values.listen((String value) {
       ret.style.backgroundColor = value;
     });
+    field.backgroundColorProperty.getter = () => ret.style.backgroundColor;
 
     if (field.vAlign != null)
       ret.style.alignItems = vAlignToCssAlignItems(field.vAlign);

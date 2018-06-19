@@ -1,6 +1,6 @@
 import 'package:nuts/nuts.dart';
 
-class TextField implements View, ViewWithWidth {
+class TextField implements View, ViewWithWidth, ViewWithClasses {
   String key;
   bool bold;
   String fontFamily;
@@ -29,8 +29,8 @@ class TextField implements View, ViewWithWidth {
   }
 
   final textProperty = BackedReactive<String>();
-  String get text => textProperty.get;
-  set text(String value) => textProperty.set = value;
+  String get text => textProperty.value;
+  set text(String value) => textProperty.value = value;
 }
 
 abstract class LabeledView implements View {

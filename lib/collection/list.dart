@@ -1,19 +1,27 @@
 import 'dart:async';
 import 'package:collection/collection.dart';
 import 'collection.dart';
+import 'package:nuts/nuts.dart';
 
 class IfList<E> extends DelegatingList<E> implements List<E> {
-  IfList([int length]) : super(length != null ? List<E>(length) : List<E>());
+  IfList([int length]) : super(length != null ? List<E>(length) : List<E>()) {
+    _onChange = _changes.stream.asBroadcastStream();
+  }
 
   IfList.filled(int length, E fill, {bool growable: false})
-      : super(List<E>.filled(length, fill, growable: growable));
+      : super(List<E>.filled(length, fill, growable: growable)) {
+    _onChange = _changes.stream.asBroadcastStream();
+  }
 
   IfList.from(Iterable<E> elements, {bool growable: true})
-      : super(List<E>.from(elements, growable: growable));
+      : super(List<E>.from(elements, growable: growable)) {
+    _onChange = _changes.stream.asBroadcastStream();
+  }
 
   IfList.union(Iterable<E> elements, [E element])
       : super(elements?.toList() ?? <E>[]) {
     if (element != null) add(element);
+    _onChange = _changes.stream.asBroadcastStream();
   }
 
   IfList.of(Iterable<E> elements, {bool growable: true})
@@ -34,34 +42,35 @@ class IfList<E> extends DelegatingList<E> implements List<E> {
 
   operator []=(int index, E value) {
     super[index] = value;
-    if (_changes.hasListener) {
-      _changes.add(ListChangeNotification<E>.set(value, index));
-    }
+    _changes.add(ListChangeNotification<E>.set(value, index));
   }
 
   void add(E element) {
     super.add(element);
-    if (_changes.hasListener) {
-      _changes.add(ListChangeNotification<E>.add(element, length - 1));
-    }
+    _changes.add(ListChangeNotification<E>.insert(element, length - 1));
+  }
+
+  void addNonNull(E element) {
+    if (element != null) add(element);
+  }
+
+  void insert(int index, E element) {
+    super.insert(index, element);
+    _changes.add(ListChangeNotification<E>.insert(element, index));
   }
 
   bool remove(Object element) {
     int pos = indexOf(element);
     bool hasRemoved = super.remove(element);
     if (hasRemoved) {
-      if (_changes.hasListener) {
-        _changes.add(ListChangeNotification<E>.remove(element, pos));
-      }
+      _changes.add(ListChangeNotification<E>.remove(element, pos));
     }
     return hasRemoved;
   }
 
   void clear() {
     super.clear();
-    if (_changes.hasListener) {
-      _changes.add(ListChangeNotification<E>.clear());
-    }
+    _changes.add(ListChangeNotification<E>.clear());
   }
 
   void assign(E element) {
@@ -74,15 +83,39 @@ class IfList<E> extends DelegatingList<E> implements List<E> {
     addAll(elements);
   }
 
-  Stream<ListChangeNotification<E>> get onChange =>
-      _changesStream.skipWhile((c) => c.time.isBefore(DateTime.now()));
+  Stream<ListChangeNotification<E>> get onChange {
+    final ret = StreamController<ListChangeNotification<E>>();
+    final now = DateTime.now();
+    for (int i = 0; i < length; i++) {
+      ret.add(new ListChangeNotification<E>.insert(this[i], i));
+    }
+    _onChange.skipWhile((m) => m.time.isBefore(now)).listen((v) => ret.add(v));
+    return ret.stream.asBroadcastStream();
+  }
 
-  Stream<ListChangeNotification<E>> __changesStream;
-
-  Stream<ListChangeNotification<E>> get _changesStream =>
-      __changesStream ??= _changes.stream.asBroadcastStream();
+  Stream<ListChangeNotification<E>> _onChange;
 
   final _changes = StreamController<ListChangeNotification<E>>();
+}
+
+typedef View ChildrenListComposer<S>(S value);
+
+class RxChildList<S> extends IfList<View> {
+  final IfList<S> binding;
+
+  final ChildrenListComposer<S> composer;
+
+  RxChildList(this.binding, this.composer) {
+    binding.onChange.listen((ListChangeNotification<S> n) {
+      if (n.op == ListChangeOp.add) {
+        insert(n.pos, composer(n.element));
+      } else if (n.op == ListChangeOp.remove) {
+        removeAt(n.pos);
+      } else if (n.op == ListChangeOp.clear) {
+        clear();
+      }
+    });
+  }
 }
 
 enum ListChangeOp { add, remove, clear, set }
@@ -101,7 +134,7 @@ class ListChangeNotification<E> {
   ListChangeNotification(this.element, this.op, this.pos, {DateTime time})
       : time = time ?? new DateTime.now();
 
-  ListChangeNotification.add(this.element, this.pos, {DateTime time})
+  ListChangeNotification.insert(this.element, this.pos, {DateTime time})
       : op = ListChangeOp.add,
         time = time ?? new DateTime.now();
 
