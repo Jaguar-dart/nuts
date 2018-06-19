@@ -126,7 +126,7 @@ Element textFieldRenderer(final field, _) {
     if (field.color != null) ret.style.color = field.color;
     if (field.onClick != null) ret.onClick.listen((_) => field.onClick());
     field.textProperty.getter = () => ret.text;
-    field.textProperty.newValues.listen((v) => ret.text = v ?? '');
+    field.textProperty.values.listen((v) => ret.text = v ?? '');
     _handleWidth(ret, field);
     _handleClasses(ret, field);
     return ret;
@@ -235,13 +235,25 @@ Element boxRenderer(final field, Renderer<Element> renderers) {
     var ret = new DivElement()..classes.add('box');
     ret.classes.addAll(field.classes);
     for (View child in field.children) ret.append(renderers.render(child));
-    if (field.width != null) ret.style.width = field.width.toString();
-    if (field.height != null) {
-      if (field.height is FlexSize) {
-        ret.style.flex = field.height.toString();
-      } else
-        ret.style.height = field.height.toString();
-    }
+
+    field.widthProperty.getter = () => FixedSize(ret.offsetWidth);
+    field.widthProperty.values.listen((Size width) {
+      ret.style.width = width.toString();
+    });
+    field.heightProperty.getter = () => FixedSize(ret.offsetHeight);
+    field.heightProperty.values.listen((Size height) {
+      if (height is FlexSize) {
+        ret.style.flex = height.toString();
+      } else {
+        ret.style.height = height.toString();
+      }
+    });
+
+    field.backgroundColorProperty.getter = () => ret.style.backgroundColor;
+    field.backgroundColorProperty.values.listen((String value) {
+      ret.style.backgroundColor = value;
+    });
+
     if (field.vAlign != null)
       ret.style.justifyContent = vAlignToCssJustifyContent(field.vAlign);
     if (field.hAlign != null)
@@ -311,13 +323,25 @@ Element hBoxRenderer(final field, Renderer<Element> renderers) {
     var ret = new DivElement()..classes.add('hbox');
     ret.classes.addAll(field.classes);
     for (View child in field.children) ret.append(renderers.render(child));
-    if (field.width != null) {
-      if (field.width is FlexSize) {
-        ret.style.flex = field.width.toString();
-      } else
-        ret.style.width = field.width.toString();
-    }
-    if (field.height != null) ret.style.height = field.height.toString();
+
+    field.widthProperty.getter = () => FixedSize(ret.offsetWidth);
+    field.widthProperty.values.listen((Size width) {
+      if (width is FlexSize) {
+        ret.style.flex = width.toString();
+      } else {
+        ret.style.width = width.toString();
+      }
+    });
+    field.heightProperty.getter = () => FixedSize(ret.offsetHeight);
+    field.heightProperty.values.listen((Size height) {
+      ret.style.height = height.toString();
+    });
+
+    field.backgroundColorProperty.getter = () => ret.style.backgroundColor;
+    field.backgroundColorProperty.values.listen((String value) {
+      ret.style.backgroundColor = value;
+    });
+
     if (field.vAlign != null)
       ret.style.alignItems = vAlignToCssAlignItems(field.vAlign);
     if (field.hAlign != null)

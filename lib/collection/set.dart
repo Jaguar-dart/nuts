@@ -58,6 +58,24 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
       _changes.stream.asBroadcastStream();
 
   final _changes = StreamController<SetChangeNotification<E>>();
+
+  void bindBool(E element, Stream<bool> stream) {
+    stream.listen((bool value) {
+      if (value)
+        add(element);
+      else
+        remove(element);
+    });
+  }
+
+  void bindReactive(E element, Reactive<bool> other) {
+    other.values.listen((bool value) {
+      if (value)
+        add(element);
+      else
+        remove(element);
+    });
+  }
 }
 
 class Classes extends IfSet<String> {

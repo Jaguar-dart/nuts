@@ -4,7 +4,6 @@ import 'package:nuts/nuts.dart';
 export 'containers.dart';
 export 'editable.dart';
 export 'measure.dart';
-export 'observable.dart';
 export 'table.dart';
 export 'text.dart';
 
@@ -41,7 +40,6 @@ enum HAlign { left, center, right }
 
 abstract class ViewWithClasses implements View {
   IfSet<String> get classes;
-  void bindClass(String class_, Stream<bool> changes);
 }
 
 abstract class Container implements View {
