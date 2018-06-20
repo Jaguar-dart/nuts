@@ -134,6 +134,11 @@ void handleWidget(final Element el, final View view) {
       if (v != null) el.style.fontWeight = v ? 'bold' : 'normal';
     });
     // TODO bold property
+
+    view.fontFamilyProperty.values.listen((String v) {
+      if (v != null) el.style.fontFamily = v;
+    });
+    // TODO fontFamily property
   }
 }
 
@@ -147,7 +152,8 @@ Element variableViewRenderer(final field, Renderer<Element> renderers) {
     });
     return el;
   }
-  throw new Exception();
+  throw new Exception(
+      'variableViewRenderer cannot render ${field.runtimeType}');
 }
 
 Element textEditRenderer(final field, Renderer<Element> renderers) {
@@ -165,7 +171,8 @@ Element textEditRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception();
+  throw new Exception(
+      'variableViewRenderer cannot render ${field.runtimeType}');
 }
 
 Element labeledEditRenderer(final field, Renderer<Element> renderers) {
@@ -178,7 +185,8 @@ Element labeledEditRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception();
+  throw new Exception(
+      'variableViewRenderer cannot render ${field.runtimeType}');
 }
 
 Element intEditRenderer(final field, Renderer<Element> renderers) {
@@ -194,7 +202,8 @@ Element intEditRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception();
+  throw new Exception(
+      'variableViewRenderer cannot render ${field.runtimeType}');
 }
 
 Element textFieldRenderer(final field, _) {
@@ -202,16 +211,14 @@ Element textFieldRenderer(final field, _) {
     var ret = new DivElement()
       ..classes.add('textfield')
       ..text = field.text;
-    ret.classes.addAll(field.classes);
-    if (field.fontFamily != null) ret.style.fontFamily = field.fontFamily;
-    if (field.color != null) ret.style.color = field.color;
-    if (field.onClick != null) ret.onClick.listen((_) => field.onClick());
-    field.textProperty.getter = () => ret.text;
+    if (field.onClick != null) ret.onClick.listen((_) => field.onClick());  // TODO
     field.textProperty.values.listen((v) => ret.text = v ?? '');
+    field.textProperty.getter = () => ret.text;
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception();
+  throw new Exception(
+      'variableViewRenderer cannot render ${field.runtimeType}');
 }
 
 Element intFieldRenderer(final field, _) {
@@ -219,10 +226,12 @@ Element intFieldRenderer(final field, _) {
     var ret = new DivElement()
       ..classes.addAll(['textfield', 'textfield-int'])
       ..text = field.text.toString();
+    // TODO text
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception();
+  throw new Exception(
+      'intFieldRenderer cannot render ${field.runtimeType}');
 }
 
 Element labeledFieldRenderer(final field, Renderer<Element> renderers) {
@@ -235,7 +244,8 @@ Element labeledFieldRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception();
+  throw new Exception(
+      'labeledFieldRenderer cannot render ${field.runtimeType}');
 }
 
 Element vLabeledFieldRenderer(final field, Renderer<Element> renderers) {
@@ -248,7 +258,8 @@ Element vLabeledFieldRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception();
+  throw new Exception(
+      'vLabeledFieldRenderer cannot render ${field.runtimeType}');
 }
 
 String vAlignToCssJustifyContent(VAlign align) {
@@ -282,8 +293,6 @@ String hAlignToCssAlignItems(HAlign align) {
 Element boxRenderer(final field, Renderer<Element> renderers) {
   if (field is Box) {
     var ret = new DivElement()..classes.add('box');
-    ret.classes.addAll(field.classes); // TODO needed?
-
     if (field.vAlign != null)
       ret.style.justifyContent = vAlignToCssJustifyContent(field.vAlign);
     if (field.hAlign != null)
@@ -301,7 +310,8 @@ Element boxRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception();
+  throw new Exception(
+      'boxRenderer cannot render ${field.runtimeType}');
 }
 
 String vAlignToCssAlignItems(VAlign align) {
@@ -335,8 +345,6 @@ String hAlignToCssJustifyContent(HAlign align) {
 Element hBoxRenderer(final field, Renderer<Element> renderers) {
   if (field is HBox) {
     var ret = new DivElement()..classes.add('hbox');
-    ret.classes.addAll(field.classes);
-
     if (field.vAlign != null)
       ret.style.alignItems = vAlignToCssAlignItems(field.vAlign);
     if (field.hAlign != null)
@@ -354,7 +362,8 @@ Element hBoxRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception();
+  throw new Exception(
+      'hBoxRenderer cannot render ${field.runtimeType}');
 }
 
 Element buttonRenderer(final field, Renderer<Element> renderers) {
@@ -367,11 +376,11 @@ Element buttonRenderer(final field, Renderer<Element> renderers) {
     if (field.fontSize != null) ret.style.fontSize = '${field.fontSize}px';
     if (field.tip != null) ret.title = field.tip;
     if (field.onClick != null) ret.onClick.listen((_) => field.onClick());
-    ret.classes.addAll(field.classes);
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception();
+  throw new Exception(
+      'buttonRenderer cannot render ${field.runtimeType}');
 }
 
 Element tableRenderer(final field, Renderer<Element> renderers) {
@@ -415,7 +424,8 @@ Element tableRenderer(final field, Renderer<Element> renderers) {
           "cellpadding": "0",
         }));
   }
-  throw new Exception();
+  throw new Exception(
+      'tableRenderer cannot render ${field.runtimeType}');
 }
 
 Element formRenderer(final field, Renderer<Element> renderers) {
@@ -427,7 +437,8 @@ Element formRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception();
+  throw new Exception(
+      'formRenderer cannot render ${field.runtimeType}');
 }
 
 class HtmlRenderer extends Renderer<Element> {

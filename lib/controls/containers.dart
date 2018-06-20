@@ -65,6 +65,10 @@ class Box extends Object with WidgetMixin implements Container {
     paddingTopProperty.setHowever(paddingTop);
     paddingRightProperty.setHowever(paddingRight);
     paddingBottomProperty.setHowever(paddingBottom);
+    leftProperty.setHowever(left);
+    topProperty.setHowever(top);
+    rightProperty.setHowever(right);
+    bottomProperty.setHowever(bottom);
     boldProperty.setHowever(bold);
     fontFamilyProperty.setHowever(fontFamily);
     colorProperty.setHowever(color);
@@ -157,6 +161,10 @@ class HBox extends Object with WidgetMixin implements Container {
     paddingTopProperty.setHowever(paddingTop);
     paddingRightProperty.setHowever(paddingRight);
     paddingBottomProperty.setHowever(paddingBottom);
+    leftProperty.setHowever(left);
+    topProperty.setHowever(top);
+    rightProperty.setHowever(right);
+    bottomProperty.setHowever(bottom);
     boldProperty.setHowever(bold);
     fontFamilyProperty.setHowever(fontFamily);
     colorProperty.setHowever(color);

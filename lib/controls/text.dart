@@ -57,6 +57,10 @@ class TextField extends Object with WidgetMixin implements Widget {
     paddingTopProperty.setHowever(paddingTop);
     paddingRightProperty.setHowever(paddingRight);
     paddingBottomProperty.setHowever(paddingBottom);
+    leftProperty.setHowever(left);
+    topProperty.setHowever(top);
+    rightProperty.setHowever(right);
+    bottomProperty.setHowever(bottom);
     boldProperty.setHowever(bold);
     fontFamilyProperty.setHowever(fontFamily);
     colorProperty.setHowever(color);
