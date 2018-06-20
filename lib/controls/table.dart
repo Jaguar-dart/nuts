@@ -6,9 +6,9 @@ import 'package:nuts/controls/view.dart';
 
 class TableRow implements View {
   String key;
-  final Size height;
-  final FixedSize minHeight;
-  final FixedSize maxHeight;
+  final Distance height;
+  final FixedDistance minHeight;
+  final FixedDistance maxHeight;
   Map<String, View> cells;
   TableRow(this.cells, {this.height, this.minHeight, this.maxHeight, this.key});
 }
@@ -16,9 +16,9 @@ class TableRow implements View {
 class ColumnSpec<T> {
   final String label;
   final String name;
-  final Size width;
-  final FixedSize minWidth;
-  final FixedSize maxWidth;
+  final Distance width;
+  final FixedDistance minWidth;
+  final FixedDistance maxWidth;
   final bool isResizable;
   // TODO
 

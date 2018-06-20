@@ -39,6 +39,11 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
     return ret;
   }
 
+  bool addNonNull(E element) {
+    if(element == null) return false;
+    return add(element);
+  }
+
   bool remove(Object element) {
     bool hasRemoved = super.remove(element);
     if (hasRemoved) {

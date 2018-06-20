@@ -1,31 +1,66 @@
 import 'package:nuts/nuts.dart';
 
-class TextField implements View, ViewWithWidth, ViewWithClasses {
+class TextField extends Object with WidgetMixin implements Widget {
   String key;
-  bool bold;
-  String fontFamily;
-  String color;
   final IfSet<String> classes;
-  Size width;
-  Size minWidth;
-  Size maxWidth;
-
   final Callback onClick;
 
   TextField(
-      {/* String | Stream<String> | Reactive<String> */ text,
-      this.bold: false,
-      this.key,
-      this.fontFamily,
-      this.color,
+      {this.key,
+      /* String | Stream<String> | Reactive<String> */ text,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ width,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ minWidth,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ maxWidth,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ height,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ minHeight,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ maxHeight,
+
+      /* Distance | Stream<Distance> | Reactive<Distance> */ marginLeft,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ marginTop,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ marginRight,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ marginBottom,
+
+      /* Distance | Stream<Distance> | Reactive<Distance> */ paddingLeft,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ paddingTop,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ paddingRight,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ paddingBottom,
+
+      /* Distance | Stream<Distance> | Reactive<Distance> */ left,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ top,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ right,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ bottom,
+
+      /* bool | Stream<bool> | Reactive<bool> */ bold,
+
+      /* String | Stream<String> | Reactive<String> */ fontFamily,
+      /* String | Stream<String> | Reactive<Stream> */ color,
+        /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
       String class_,
       Iterable<String> classes,
-      this.width,
-      this.minWidth,
-      this.maxWidth,
       this.onClick})
-      : classes = IfSet<String>.union(classes, class_) {
+      : classes = classes is IfSet<String>
+            ? classes
+            : IfSet<String>.union(classes, class_) {
+    if (classes is IfSet) this.classes.addNonNull(class_);
     textProperty.setHowever(text);
+    widthProperty.setHowever(width);
+    minWidthProperty.setHowever(minWidth);
+    maxWidthProperty.setHowever(maxWidth);
+    heightProperty.setHowever(height);
+    minHeightProperty.setHowever(minHeight);
+    maxHeightProperty.setHowever(maxHeight);
+    marginLeftProperty.setHowever(marginLeft);
+    marginTopProperty.setHowever(marginTop);
+    marginRightProperty.setHowever(marginRight);
+    marginBottomProperty.setHowever(marginBottom);
+    paddingLeftProperty.setHowever(paddingLeft);
+    paddingTopProperty.setHowever(paddingTop);
+    paddingRightProperty.setHowever(paddingRight);
+    paddingBottomProperty.setHowever(paddingBottom);
+    boldProperty.setHowever(bold);
+    fontFamilyProperty.setHowever(fontFamily);
+    colorProperty.setHowever(color);
+    backgroundColorProperty.setHowever(backgroundColor);
   }
 
   final textProperty = BackedReactive<String>();
@@ -41,100 +76,87 @@ abstract class VLabeledView implements LabeledView {}
 
 abstract class HLabeledView implements LabeledView {}
 
-class LabeledTextField implements HLabeledView {
+class LabeledField extends Object
+    with WidgetMixin
+    implements HLabeledView, Widget {
   String key;
+  final IfSet<String> classes;
   TextField labelField;
-  TextField textField;
-  Size height;
+  View labelled;
+  Distance height;
   VAlign vAlign;
 
-  LabeledTextField(
-      {String label,
-      TextField labelField,
-      TextField textField,
-      String text,
-      this.height,
-      this.vAlign,
-      this.key})
-      : textField = textField ?? TextField(text: text),
-        labelField = labelField ?? TextField(text: label) {
-    this.labelField.classes.add('label');
+  LabeledField(
+    this.labelled, {
+    String label,
+    TextField labelField,
+    Distance height,
+    this.vAlign,
+    this.key,
+    String class_,
+    Iterable<String> classes,
+  })  : labelField = labelField ?? TextField(text: label),
+        classes = classes is IfSet<String>
+            ? classes
+            : IfSet<String>.union(classes, class_) {
+    if (classes is IfSet) this.classes.addNonNull(class_);
+    this.labelField.classes.add('label'); // TODO remove
+    this.height = height;
   }
 }
 
-class VLabeledTextField implements VLabeledView {
+class VLabeledField extends Object
+    with WidgetMixin
+    implements VLabeledView {
   String key;
+  final IfSet<String> classes;
   TextField labelField;
-  TextField textField;
-  Size width;
+  View labelled;
   HAlign hAlign;
 
-  VLabeledTextField(
-      {String label,
-      TextField labelField,
-      TextField textField,
-      String text,
-      this.width,
-      this.hAlign,
-      this.key})
-      : textField = textField ?? TextField(text: text),
-        labelField = labelField ?? TextField(text: label) {
-    this.labelField.classes.add('label');
+  VLabeledField(
+    this.labelled, {
+    String label,
+    TextField labelField,
+    String text,
+    Distance width,
+    this.hAlign,
+    this.key,
+    String class_,
+    Iterable<String> classes,
+  })  : labelField = labelField ?? TextField(text: label),
+        classes = classes is IfSet<String>
+            ? classes
+            : IfSet<String>.union(classes, class_) {
+    if (classes is IfSet) this.classes.addNonNull(class_);
+    this.width = width;
+    this.labelField.classes.add('label'); // TODO remove
   }
 }
 
-class IntField implements View {
+class IntField extends Object with WidgetMixin implements View {
   String key;
+  final IfSet<String> classes;
   final int text;
   final bool bold;
 
-  IntField(this.text, {this.bold, this.key});
-}
-
-class LabeledIntField implements HLabeledView {
-  String key;
-  TextField labelField;
-  IntField intField;
-  Size height;
-  VAlign vAlign;
-
-  LabeledIntField(
-      {String label,
-      TextField labelField,
-      IntField intField,
-      int text,
-      this.height,
-      this.vAlign,
-      this.key})
-      : intField = intField ?? IntField(text),
-        labelField = labelField ?? TextField(text: label) {
-    this.labelField.classes.add('label');
+  IntField(
+    this.text, {
+    this.bold,
+    this.key,
+    String class_,
+    Iterable<String> classes,
+  }) : classes = classes is IfSet<String>
+            ? classes
+            : IfSet<String>.union(classes, class_) {
+    if (classes is IfSet) this.classes.addNonNull(class_);
   }
 }
 
-class VLabeledIntField implements VLabeledView {
+class Button extends Object with WidgetMixin implements Widget {
   String key;
-  TextField labelField;
-  IntField intField;
-  Size width;
-  HAlign hAlign;
+  final IfSet<String> classes;
 
-  VLabeledIntField(
-      {String label,
-      TextField labelField,
-      IntField intField,
-      int text,
-      this.width,
-      this.hAlign,
-      this.key})
-      : intField = intField ?? IntField(text),
-        labelField = labelField ?? TextField(text: label) {
-    this.labelField.classes.add('label');
-  }
-}
-
-class Button implements View {
-  String key;
   final String icon;
 
   final String text;
@@ -146,7 +168,6 @@ class Button implements View {
   final String color;
 
   final int fontSize;
-  final IfSet<String> classes;
 
   Button(
       {this.icon,
@@ -160,7 +181,9 @@ class Button implements View {
       Iterable<String> classes})
       : classes = classes is IfSet<String>
             ? classes
-            : IfSet<String>.union(classes, class_);
+            : IfSet<String>.union(classes, class_) {
+    if (classes is IfSet) this.classes.addNonNull(class_);
+  }
 
   static const String blue = '#2687c1';
 

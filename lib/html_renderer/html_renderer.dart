@@ -5,30 +5,19 @@ final HtmlRenderer defaultRenderers = new HtmlRenderer()
   ..register<Box>(boxRenderer)
   ..register<HBox>(hBoxRenderer)
   ..register<TextField>(textFieldRenderer)
-  ..register<LabeledTextField>(labeledTextFieldRenderer)
-  ..register<VLabeledTextField>(vLabeledTextFieldRenderer)
+  ..register<LabeledField>(labeledFieldRenderer)
+  ..register<VLabeledField>(vLabeledFieldRenderer)
   ..register<Button>(buttonRenderer)
   ..register<IntField>(intFieldRenderer)
   ..register<Table>(tableRenderer)
-  ..register<LabeledIntField>(labeledIntFieldRenderer)
-  ..register<VLabeledIntField>(vLabeledIntFieldRenderer)
   ..register<TextEdit>(textEditRenderer)
-  ..register<LabeledTextEdit>(labeledTextEditRenderer)
+  ..register<LabeledEdit>(labeledEditRenderer)
   ..register<IntEdit>(intEditRenderer)
-  ..register<LabeledIntEdit>(labeledIntEditRenderer)
   ..register<Form>(formRenderer)
   ..register<VariableView>(variableViewRenderer);
 
-void _handleWidth(final Element el, final View view) {
-  if (view is ViewWithWidth) {
-    if (view.width != null) el.style.width = view.width.toString();
-    if (view.minWidth != null) el.style.minWidth = view.minWidth.toString();
-    if (view.maxWidth != null) el.style.maxWidth = view.maxWidth.toString();
-  }
-}
-
-void _handleClasses(final Element el, final View view) {
-  if (view is ViewWithClasses) {
+void handleWidget(final Element el, final View view) {
+  if (view is Widget) {
     view.classes.onChange.listen((e) {
       if (e.op == SetChangeOp.add) {
         el.classes.add(e.element);
@@ -36,6 +25,115 @@ void _handleClasses(final Element el, final View view) {
         el.classes.remove(e.element);
       }
     });
+
+    view.leftProperty.values.listen((Distance left) {
+      if (left != null) el.style.left = left.toString();
+    });
+    view.leftProperty.getter = () => FixedDistance(el.offsetLeft);
+
+    view.topProperty.values.listen((Distance top) {
+      if (top != null) el.style.top = top.toString();
+    });
+    view.topProperty.getter = () => FixedDistance(el.offsetTop);
+
+    view.rightProperty.values.listen((Distance right) {
+      if (right != null) el.style.right = right.toString();
+    });
+    // TODO view.rightProperty.getter = () => FixedDistance(el.offsetRight);
+
+    view.bottomProperty.values.listen((Distance bottom) {
+      if (bottom != null) el.style.bottom = bottom.toString();
+    });
+    // TODO view.bottomProperty.getter = () => FixedDistance(el.offsetBottom);
+
+    view.widthProperty.values.listen((Distance width) {
+      if (width is FlexSize) {
+        el.style.flex = width.toString();
+      } else if (width != null) {
+        el.style.width = width.toString();
+      }
+    });
+    view.widthProperty.getter = () => FixedDistance(el.offsetWidth);
+
+    view.minWidthProperty.values.listen((Distance width) {
+      if (width != null) el.style.minWidth = width.toString();
+    });
+
+    view.maxWidthProperty.values.listen((Distance width) {
+      if (width != null) el.style.maxWidth = width.toString();
+    });
+
+    view.heightProperty.values.listen((Distance height) {
+      if (height is FlexSize) {
+        el.style.flex = height.toString();
+      } else if (height != null) {
+        el.style.height = height.toString();
+      }
+    });
+    view.heightProperty.getter = () => FixedDistance(el.offsetHeight);
+
+    view.minHeightProperty.values.listen((Distance height) {
+      if (height != null) el.style.minHeight = height.toString();
+    });
+
+    view.maxHeightProperty.values.listen((Distance height) {
+      if (height != null) el.style.maxHeight = height.toString();
+    });
+
+    view.backgroundColorProperty.values.listen((String value) {
+      el.style.backgroundColor = value;
+    });
+    view.backgroundColorProperty.getter = () => el.style.backgroundColor;
+
+    view.colorProperty.values.listen((String value) {
+      el.style.color = value;
+    });
+    view.colorProperty.getter = () => el.style.color;
+
+    view.paddingLeftProperty.values.listen((Distance d) {
+      if (d != null) el.style.paddingLeft = d.toString();
+    });
+    // TODO padding Left getter
+
+    view.paddingTopProperty.values.listen((Distance d) {
+      if (d != null) el.style.paddingTop = d.toString();
+    });
+    // TODO padding Top getter
+
+    view.paddingRightProperty.values.listen((Distance d) {
+      if (d != null) el.style.paddingRight = d.toString();
+    });
+    // TODO padding Right getter
+
+    view.paddingBottomProperty.values.listen((Distance d) {
+      if (d != null) el.style.paddingBottom = d.toString();
+    });
+    // TODO padding Bottom getter
+
+    view.marginLeftProperty.values.listen((Distance d) {
+      if (d != null) el.style.marginLeft = d.toString();
+    });
+    // TODO margin Left getter
+
+    view.marginTopProperty.values.listen((Distance d) {
+      if (d != null) el.style.marginTop = d.toString();
+    });
+    // TODO margin Top getter
+
+    view.marginRightProperty.values.listen((Distance d) {
+      if (d != null) el.style.marginRight = d.toString();
+    });
+    // TODO margin Right getter
+
+    view.marginBottomProperty.values.listen((Distance d) {
+      if (d != null) el.style.marginBottom = d.toString();
+    });
+    // TODO margin Bottom getter
+
+    view.boldProperty.values.listen((bool v) {
+      if (v != null) el.style.fontWeight = v ? 'bold' : 'normal';
+    });
+    // TODO bold property
   }
 }
 
@@ -57,28 +155,27 @@ Element textEditRenderer(final field, Renderer<Element> renderers) {
     var ret = new TextInputElement()
       ..classes.add('textinput')
       ..value = field.initial ?? '';
-    if (field.placeholder != null) ret.placeholder = field.placeholder;
+    if (field.placeholder != null)
+      ret.placeholder = field.placeholder; // TODO rx
     if (field.bold) ret.style.fontWeight = 'bold';
     field.readValue = () => ret.value;
     field.setValue = (v) {
       ret.value = v ?? '';
     };
-    _handleWidth(ret, field);
-    _handleClasses(ret, field);
+    handleWidget(ret, field);
     return ret;
   }
   throw new Exception();
 }
 
-Element labeledTextEditRenderer(final field, Renderer<Element> renderers) {
-  if (field is LabeledTextEdit) {
+Element labeledEditRenderer(final field, Renderer<Element> renderers) {
+  if (field is LabeledEdit) {
     var ret = renderers.render(HBox(children: [
       field.labelField,
-      field.editField,
+      field.labelled,
     ]))
       ..classes.addAll(['labeled', 'labeled-textinput']);
-    _handleWidth(ret, field);
-    _handleClasses(ret, field);
+    handleWidget(ret, field);
     return ret;
   }
   throw new Exception();
@@ -89,27 +186,12 @@ Element intEditRenderer(final field, Renderer<Element> renderers) {
     var ret = new TextInputElement()
       ..classes.add('textinput')
       ..value = field.initial?.toString() ?? '';
-    if (field.placeholder != null) ret.placeholder = field.placeholder;
-    if (field.bold) ret.style.fontWeight = 'bold';
+    if (field.placeholder != null)
+      ret.placeholder = field.placeholder; // TODO rx
     field.readValue = () => int.tryParse(ret.value);
     void setValue(int v) => ret.value = v?.toString() ?? '';
     field.setValue = setValue;
-    _handleWidth(ret, field);
-    _handleClasses(ret, field);
-    return ret;
-  }
-  throw new Exception();
-}
-
-Element labeledIntEditRenderer(final field, Renderer<Element> renderers) {
-  if (field is LabeledIntEdit) {
-    var ret = renderers.render(HBox(children: [
-      field.labelField,
-      field.editField,
-    ]))
-      ..classes.addAll(['labeled', 'labeled-textinput']);
-    _handleWidth(ret, field);
-    _handleClasses(ret, field);
+    handleWidget(ret, field);
     return ret;
   }
   throw new Exception();
@@ -121,14 +203,12 @@ Element textFieldRenderer(final field, _) {
       ..classes.add('textfield')
       ..text = field.text;
     ret.classes.addAll(field.classes);
-    if (field.bold) ret.style.fontWeight = 'bold';
     if (field.fontFamily != null) ret.style.fontFamily = field.fontFamily;
     if (field.color != null) ret.style.color = field.color;
     if (field.onClick != null) ret.onClick.listen((_) => field.onClick());
     field.textProperty.getter = () => ret.text;
     field.textProperty.values.listen((v) => ret.text = v ?? '');
-    _handleWidth(ret, field);
-    _handleClasses(ret, field);
+    handleWidget(ret, field);
     return ret;
   }
   throw new Exception();
@@ -139,64 +219,33 @@ Element intFieldRenderer(final field, _) {
     var ret = new DivElement()
       ..classes.addAll(['textfield', 'textfield-int'])
       ..text = field.text.toString();
-    _handleWidth(ret, field);
-    _handleClasses(ret, field);
+    handleWidget(ret, field);
     return ret;
   }
   throw new Exception();
 }
 
-Element labeledTextFieldRenderer(final field, Renderer<Element> renderers) {
-  if (field is LabeledTextField) {
+Element labeledFieldRenderer(final field, Renderer<Element> renderers) {
+  if (field is LabeledField) {
     var ret = renderers.render(HBox(children: [
       field.labelField,
-      field.textField,
+      field.labelled,
     ]))
       ..classes.addAll(['labeled', 'labeled-textfield']);
-    _handleWidth(ret, field);
-    _handleClasses(ret, field);
+    handleWidget(ret, field);
     return ret;
   }
   throw new Exception();
 }
 
-Element vLabeledTextFieldRenderer(final field, Renderer<Element> renderers) {
-  if (field is LabeledTextField) {
+Element vLabeledFieldRenderer(final field, Renderer<Element> renderers) {
+  if (field is LabeledField) {
     var ret = renderers.render(Box(children: [
       field.labelField,
-      field.textField,
+      field.labelled,
     ]))
       ..classes.addAll(['vlabeled', 'vlabeled-textfield']);
-    _handleWidth(ret, field);
-    _handleClasses(ret, field);
-    return ret;
-  }
-  throw new Exception();
-}
-
-Element labeledIntFieldRenderer(final field, Renderer<Element> renderers) {
-  if (field is LabeledIntField) {
-    var ret = renderers.render(HBox(children: [
-      field.labelField,
-      field.intField,
-    ]))
-      ..classes.addAll(['labeled', 'labeled-textfield']);
-    _handleWidth(ret, field);
-    _handleClasses(ret, field);
-    return ret;
-  }
-  throw new Exception();
-}
-
-Element vLabeledIntFieldRenderer(final field, Renderer<Element> renderers) {
-  if (field is LabeledTextField) {
-    var ret = renderers.render(Box(children: [
-      field.labelField,
-      field.textField,
-    ]))
-      ..classes.addAll(['vlabeled', 'vlabeled-textfield']);
-    _handleWidth(ret, field);
-    _handleClasses(ret, field);
+    handleWidget(ret, field);
     return ret;
   }
   throw new Exception();
@@ -233,33 +282,12 @@ String hAlignToCssAlignItems(HAlign align) {
 Element boxRenderer(final field, Renderer<Element> renderers) {
   if (field is Box) {
     var ret = new DivElement()..classes.add('box');
-    ret.classes.addAll(field.classes);
-    // TODO for (View child in field.children) ret.append(renderers.render(child));
-
-    field.widthProperty.values.listen((Size width) {
-      ret.style.width = width.toString();
-    });
-    field.widthProperty.getter = () => FixedSize(ret.offsetWidth);
-    field.heightProperty.values.listen((Size height) {
-      if (height is FlexSize) {
-        ret.style.flex = height.toString();
-      } else if(height != null) {
-        ret.style.height = height.toString();
-      }
-    });
-    field.heightProperty.getter = () => FixedSize(ret.offsetHeight);
-
-    field.backgroundColorProperty.values.listen((String value) {
-      ret.style.backgroundColor = value;
-    });
-    field.backgroundColorProperty.getter = () => ret.style.backgroundColor;
+    ret.classes.addAll(field.classes); // TODO needed?
 
     if (field.vAlign != null)
       ret.style.justifyContent = vAlignToCssJustifyContent(field.vAlign);
     if (field.hAlign != null)
       ret.style.alignItems = hAlignToCssAlignItems(field.hAlign);
-    if (field.pad != null) _padElement(ret, field.pad);
-    if (field.margin != null) _marginElement(ret, field.margin);
     field.children.onChange.listen((e) {
       if (e.op == ListChangeOp.add)
         ret.children.insert(e.pos, renderers.render(e.element));
@@ -270,7 +298,7 @@ Element boxRenderer(final field, Renderer<Element> renderers) {
       else
         ret.children.clear();
     });
-    _handleClasses(ret, field);
+    handleWidget(ret, field);
     return ret;
   }
   throw new Exception();
@@ -304,51 +332,15 @@ String hAlignToCssJustifyContent(HAlign align) {
   }
 }
 
-void _padElement(Element e, EdgeInset padding) {
-  if (padding.top != null) e.style.paddingTop = padding.top.toString();
-  if (padding.right != null) e.style.paddingRight = padding.right.toString();
-  if (padding.bottom != null) e.style.paddingBottom = padding.bottom.toString();
-  if (padding.left != null) e.style.paddingLeft = padding.left.toString();
-}
-
-void _marginElement(Element e, EdgeInset margin) {
-  if (margin.top != null) e.style.marginTop = margin.top.toString();
-  if (margin.right != null) e.style.marginRight = margin.right.toString();
-  if (margin.bottom != null) e.style.marginLeft = margin.bottom.toString();
-  if (margin.left != null) e.style.marginBottom = margin.left.toString();
-}
-
 Element hBoxRenderer(final field, Renderer<Element> renderers) {
   if (field is HBox) {
     var ret = new DivElement()..classes.add('hbox');
     ret.classes.addAll(field.classes);
-    // TODO for (View child in field.children) ret.append(renderers.render(child));
-
-    field.widthProperty.values.listen((Size width) {
-      if (width is FlexSize) {
-        ret.style.flex = width.toString();
-      } else if(width != null) {
-        ret.style.width = width.toString();
-      }
-    });
-    field.widthProperty.getter = () => FixedSize(ret.offsetWidth);
-
-    field.heightProperty.values.listen((Size height) {
-      ret.style.height = height.toString();
-    });
-    field.heightProperty.getter = () => FixedSize(ret.offsetHeight);
-
-    field.backgroundColorProperty.values.listen((String value) {
-      ret.style.backgroundColor = value;
-    });
-    field.backgroundColorProperty.getter = () => ret.style.backgroundColor;
 
     if (field.vAlign != null)
       ret.style.alignItems = vAlignToCssAlignItems(field.vAlign);
     if (field.hAlign != null)
       ret.style.justifyContent = hAlignToCssJustifyContent(field.hAlign);
-    if (field.pad != null) _padElement(ret, field.pad);
-    if (field.margin != null) _marginElement(ret, field.margin);
     field.children.onChange.listen((e) {
       if (e.op == ListChangeOp.add)
         ret.children.insert(e.pos, renderers.render(e.element));
@@ -359,7 +351,7 @@ Element hBoxRenderer(final field, Renderer<Element> renderers) {
       else
         ret.children.clear();
     });
-    _handleClasses(ret, field);
+    handleWidget(ret, field);
     return ret;
   }
   throw new Exception();
@@ -376,8 +368,7 @@ Element buttonRenderer(final field, Renderer<Element> renderers) {
     if (field.tip != null) ret.title = field.tip;
     if (field.onClick != null) ret.onClick.listen((_) => field.onClick());
     ret.classes.addAll(field.classes);
-    _handleWidth(ret, field);
-    _handleClasses(ret, field);
+    handleWidget(ret, field);
     return ret;
   }
   throw new Exception();
@@ -433,7 +424,7 @@ Element formRenderer(final field, Renderer<Element> renderers) {
       children: field.children,
     ))
       ..classes.add('form');
-    _handleWidth(ret, field);
+    handleWidget(ret, field);
     return ret;
   }
   throw new Exception();

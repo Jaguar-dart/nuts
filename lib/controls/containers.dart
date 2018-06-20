@@ -1,49 +1,80 @@
 import 'package:nuts/nuts.dart';
 
-class Box implements Container, ViewWithClasses {
+class Box extends Object with WidgetMixin implements Container {
   final String key;
   final IfList<View> children;
-  final IfSet<String> classes; // TODO: Make it, bi-directional
-  HAlign hAlign;
-  VAlign vAlign;
-  final EdgeInset pad;
-  final EdgeInset margin;
-  Box(
-      {View child,
-      Iterable<View> children,
-      this.key,
-      String class_,
-      Iterable<String> classes,
-      /* Size | Stream<Size> | Reactive<Size> */ width,
-      /* Size | Stream<Size> | Reactive<Size> */ height,
-      /* String | Stream<String> | Reactive<String> */ backgroundColor,
-      this.hAlign,
-      this.vAlign,
-      this.pad,
-      this.margin})
-      : children = children is RxChildList
+  final IfSet<String> classes;
+  HAlign hAlign; // TODO convert to rx property
+  VAlign vAlign; // TODO convert to rx property
+  Box({
+    View child,
+    Iterable<View> children,
+    this.key,
+    String class_,
+    Iterable<String> classes,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ width,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ minWidth,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ maxWidth,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ height,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ minHeight,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ maxHeight,
+
+    /* Distance | Stream<Distance> | Reactive<Distance> */ marginLeft,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ marginTop,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ marginRight,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ marginBottom,
+
+    /* Distance | Stream<Distance> | Reactive<Distance> */ paddingLeft,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ paddingTop,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ paddingRight,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ paddingBottom,
+
+    /* Distance | Stream<Distance> | Reactive<Distance> */ left,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ top,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ right,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ bottom,
+
+    /* bool | Stream<bool> | Reactive<bool> */ bold,
+
+    /* String | Stream<String> | Reactive<String> */ fontFamily,
+    /* String | Stream<String> | Reactive<Stream> */ color,
+    /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
+    EdgeInset padding,
+    EdgeInset margin,
+    this.hAlign,
+    this.vAlign,
+  })  : children = children is RxChildList
             ? children
             : IfList<View>.union(children, child),
-        classes = IfSet<String>.union(classes, class_) {
+        classes = classes is IfSet<String>
+            ? classes
+            : IfSet<String>.union(classes, class_) {
+    if (classes is IfSet) this.classes.addNonNull(class_);
     if (children is RxChildList) children.addNonNull(child);
     widthProperty.setHowever(width);
+    minWidthProperty.setHowever(minWidth);
+    maxWidthProperty.setHowever(maxWidth);
     heightProperty.setHowever(height);
+    minHeightProperty.setHowever(minHeight);
+    maxHeightProperty.setHowever(maxHeight);
+    marginLeftProperty.setHowever(marginLeft);
+    marginTopProperty.setHowever(marginTop);
+    marginRightProperty.setHowever(marginRight);
+    marginBottomProperty.setHowever(marginBottom);
+    paddingLeftProperty.setHowever(paddingLeft);
+    paddingTopProperty.setHowever(paddingTop);
+    paddingRightProperty.setHowever(paddingRight);
+    paddingBottomProperty.setHowever(paddingBottom);
+    boldProperty.setHowever(bold);
+    fontFamilyProperty.setHowever(fontFamily);
+    colorProperty.setHowever(color);
     backgroundColorProperty.setHowever(backgroundColor);
+    if (padding != null) this.padding = padding;
+    if (margin != null) this.margin = margin;
   }
 
   void addChild(View v) => children.add(v);
   void addChildren(Iterable<View> v) => children.addAll(v);
-
-  final widthProperty = BackedReactive<Size>();
-  Size get width => widthProperty.value;
-  set width(Size value) => widthProperty.value = value;
-  final heightProperty = BackedReactive<Size>();
-  Size get height => heightProperty.value;
-  set height(Size value) => heightProperty.value = value;
-
-  final backgroundColorProperty = BackedReactive<String>();
-  String get backgroundColor => backgroundColorProperty.value;
-  set backgroundColor(String value) => backgroundColorProperty.value = value;
 
   T getByKey<T extends View>(String key) =>
       children.firstWhere((v) => v.key == key, orElse: () => null);
@@ -61,50 +92,81 @@ class Box implements Container, ViewWithClasses {
   }
 }
 
-class HBox implements Container, ViewWithClasses {
+class HBox extends Object with WidgetMixin implements Container {
   String key;
   final IfList<View> children;
   final IfSet<String> classes;
-  HAlign hAlign;
-  VAlign vAlign;
-  final EdgeInset pad;
-  final EdgeInset margin;
-  HBox(
-      {View child,
-      Iterable<View> children,
-      this.key,
-      String class_,
-      Iterable<String> classes,
-      /* Size | Stream<Size> | Reactive<Size> */ width,
-      /* Size | Stream<Size> | Reactive<Size> */ height,
-      /* String | Stream<String> | Reactive<String> */ backgroundColor,
-      this.hAlign,
-      this.vAlign: VAlign.middle,
-      this.pad,
-      this.margin})
-      : children = children is RxChildList
+  HAlign hAlign; // TODO convert to rx property
+  VAlign vAlign; // TODO convert to rx property
+  HBox({
+    View child,
+    Iterable<View> children,
+    this.key,
+    String class_,
+    Iterable<String> classes,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ width,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ minWidth,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ maxWidth,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ height,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ minHeight,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ maxHeight,
+
+    /* Distance | Stream<Distance> | Reactive<Distance> */ marginLeft,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ marginTop,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ marginRight,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ marginBottom,
+
+    /* Distance | Stream<Distance> | Reactive<Distance> */ paddingLeft,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ paddingTop,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ paddingRight,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ paddingBottom,
+
+    /* Distance | Stream<Distance> | Reactive<Distance> */ left,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ top,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ right,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ bottom,
+
+    /* bool | Stream<bool> | Reactive<bool> */ bold,
+
+    /* String | Stream<String> | Reactive<String> */ fontFamily,
+    /* String | Stream<String> | Reactive<Stream> */ color,
+    /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
+    EdgeInset padding,
+    EdgeInset margin,
+    this.hAlign,
+    this.vAlign: VAlign.middle,
+  })  : children = children is RxChildList
             ? children
             : IfList<View>.union(children, child),
-        classes = IfSet<String>.union(classes, class_) {
+        classes = classes is IfSet<String>
+            ? classes
+            : IfSet<String>.union(classes, class_) {
+    if (classes is IfSet) this.classes.addNonNull(class_);
     if (children is RxChildList) children.addNonNull(child);
     widthProperty.setHowever(width);
+    minWidthProperty.setHowever(minWidth);
+    maxWidthProperty.setHowever(maxWidth);
     heightProperty.setHowever(height);
+    minHeightProperty.setHowever(minHeight);
+    maxHeightProperty.setHowever(maxHeight);
+    marginLeftProperty.setHowever(marginLeft);
+    marginTopProperty.setHowever(marginTop);
+    marginRightProperty.setHowever(marginRight);
+    marginBottomProperty.setHowever(marginBottom);
+    paddingLeftProperty.setHowever(paddingLeft);
+    paddingTopProperty.setHowever(paddingTop);
+    paddingRightProperty.setHowever(paddingRight);
+    paddingBottomProperty.setHowever(paddingBottom);
+    boldProperty.setHowever(bold);
+    fontFamilyProperty.setHowever(fontFamily);
+    colorProperty.setHowever(color);
     backgroundColorProperty.setHowever(backgroundColor);
+    if (padding != null) this.padding = padding;
+    if (margin != null) this.margin = margin;
   }
 
   void addChild(View v) => children.add(v);
   void addChildren(Iterable<View> v) => children.addAll(v);
-
-  final widthProperty = BackedReactive<Size>();
-  Size get width => widthProperty.value;
-  set width(Size value) => widthProperty.value = value;
-  final heightProperty = BackedReactive<Size>();
-  Size get height => heightProperty.value;
-  set height(Size value) => heightProperty.value = value;
-
-  final backgroundColorProperty = BackedReactive<String>();
-  String get backgroundColor => backgroundColorProperty.value;
-  set backgroundColor(String value) => backgroundColorProperty.value = value;
 
   T getByKey<T extends View>(String key) =>
       children.firstWhere((v) => v.key == key, orElse: () => null);

@@ -1,147 +1,143 @@
 import 'package:nuts/nuts.dart';
 
 abstract class EditView<T> implements View {
+  // TODO convert [value] to reactive property
   ValueGetter<T> readValue;
   ValueSetter<T> setValue;
   void setCastValue(v);
 }
 
-class TextEdit implements EditView<String>, ViewWithWidth {
+class TextEdit extends Object
+    with WidgetMixin
+    implements EditView<String>, Widget {
   String key;
+  final IfSet<String> classes;
   String initial;
   String placeholder;
   bool bold;
-  Size width;
-  Size minWidth;
-  Size maxWidth;
-  TextEdit(
-      {this.initial,
-      this.placeholder,
-      this.bold: false,
-      this.key,
-      this.width,
-      this.minWidth,
-      this.maxWidth});
+  Distance width;
+  Distance minWidth;
+  Distance maxWidth;
+  TextEdit({
+    this.initial,
+    this.placeholder,
+    this.bold: false,
+    this.key,
+    this.width,
+    this.minWidth,
+    this.maxWidth,
+    String class_,
+    Iterable<String> classes,
+  }) : classes = classes is IfSet<String>
+            ? classes
+            : IfSet<String>.union(classes, class_) {
+    if (classes is IfSet) this.classes.addNonNull(class_);
+  }
 
   ValueGetter<String> readValue;
   ValueSetter<String> setValue;
   void setCastValue(v) => setValue(v as String);
 }
 
-class IntEdit implements EditView<int>, ViewWithWidth {
+class IntEdit extends Object with WidgetMixin implements EditView<int>, Widget {
   String key;
+  final IfSet<String> classes;
   int initial;
   String placeholder;
   bool bold;
-  Size width;
-  Size minWidth;
-  Size maxWidth;
-  IntEdit(
-      {this.initial,
-      this.placeholder,
-      this.bold: false,
-      this.key,
-      this.width,
-      this.minWidth,
-      this.maxWidth});
+  Distance width;
+  Distance minWidth;
+  Distance maxWidth;
+  IntEdit({
+    this.initial,
+    this.placeholder,
+    this.bold: false,
+    this.key,
+    this.width,
+    this.minWidth,
+    this.maxWidth,
+    String class_,
+    Iterable<String> classes,
+  }) : classes = classes is IfSet<String>
+            ? classes
+            : IfSet<String>.union(classes, class_) {
+    if (classes is IfSet) this.classes.addNonNull(class_);
+  }
 
   ValueGetter<int> readValue;
   ValueSetter<int> setValue;
   void setCastValue(v) => setValue(v as int);
 }
 
-class LabeledTextEdit implements EditView<String>, HLabeledView {
+class LabeledEdit<T> extends Object
+    with WidgetMixin
+    implements EditView<T>, HLabeledView, Widget {
   String key;
+  final IfSet<String> classes;
   final TextField labelField;
-  final TextEdit editField;
-  final int height;
+  final EditView<T> labelled;
   final VAlign vAlign;
-  LabeledTextEdit(
-      {String label,
-      TextField labelField,
-      TextEdit editField,
-      String initial,
-      String placeholder,
-      this.height,
-      this.vAlign,
-      this.key})
-      : editField =
-            editField ?? TextEdit(initial: initial, placeholder: placeholder),
-        labelField = labelField ?? TextField(text: label) {
+  LabeledEdit(
+    this.labelled, {
+    String label,
+    Distance height,
+    TextField labelField,
+    this.vAlign,
+    this.key,
+    String class_,
+    Iterable<String> classes,
+  })  : labelField = labelField ?? TextField(text: label),
+        classes = classes is IfSet<String>
+            ? classes
+            : IfSet<String>.union(classes, class_) {
+    if (classes is IfSet) this.classes.addNonNull(class_);
+    this.height = height;
     this.labelField.classes.add('label');
   }
 
-  ValueGetter<String> get readValue => editField.readValue;
+  ValueGetter<T> get readValue => labelled.readValue;
 
-  set readValue(ValueGetter<String> value) => editField.readValue = value;
+  set readValue(ValueGetter<T> value) => labelled.readValue = value;
 
-  ValueSetter<String> get setValue => editField.setValue;
+  ValueSetter<T> get setValue => labelled.setValue;
 
-  set setValue(ValueSetter<String> value) => editField.setValue = value;
-  void setCastValue(v) => setValue(v as String);
+  set setValue(ValueSetter<T> value) => labelled.setValue = value;
+  void setCastValue(v) => setValue(v as T);
 }
 
-class LabeledIntEdit implements EditView<int>, HLabeledView {
-  String key;
-  final TextField labelField;
-  final IntEdit editField;
-  final int height;
-  final VAlign vAlign;
-  LabeledIntEdit(
-      {String label,
-      TextField labelField,
-      IntEdit editField,
-      int initial,
-      String placeholder,
-      this.height,
-      this.vAlign,
-      this.key})
-      : editField =
-            editField ?? IntEdit(initial: initial, placeholder: placeholder),
-        labelField = labelField ?? TextField(text: label) {
-    this.labelField.classes.add('label');
-  }
-
-  ValueGetter<int> get readValue => editField.readValue;
-
-  set readValue(ValueGetter<int> value) => editField.readValue = value;
-
-  ValueSetter<int> get setValue => editField.setValue;
-
-  set setValue(ValueSetter<int> value) => editField.setValue = value;
-  void setCastValue(v) => setValue(v as int);
-}
-
-class Form implements EditView<Map<String, dynamic>>, ViewWithWidth {
+class Form extends Object
+    with WidgetMixin
+    implements EditView<Map<String, dynamic>>, Widget {
   @override
   String key;
+  final IfSet<String> classes;
   IfList<View> children;
-  Size hLabelWidth;
-  Size hLabelMinWidth;
-  Size hLabelMaxWidth;
-  Size width;
-  Size minWidth;
-  Size maxWidth;
+  Distance hLabelWidth;
+  Distance hLabelMinWidth;
+  Distance hLabelMaxWidth;
 
-  Form(
-      {this.key,
-      Iterable<View> children,
-      View child,
-      this.hLabelWidth,
-      this.width,
-      this.minWidth,
-      this.maxWidth,
-      Size hLabelMinWidth,
-      this.hLabelMaxWidth})
-      : children = IfList<View>.union(children, child),
-        hLabelMinWidth = hLabelMinWidth ?? FixedSize(100) {
+  Form({
+    this.key,
+    Iterable<View> children,
+    View child,
+    this.hLabelWidth,
+    Distance hLabelMinWidth,
+    this.hLabelMaxWidth,
+    String class_,
+    Iterable<String> classes,
+  })  : children = IfList<View>.union(children, child),
+        hLabelMinWidth = hLabelMinWidth ?? FixedDistance(100),
+        classes = classes is IfSet<String>
+            ? classes
+            : IfSet<String>.union(classes, class_) {
+    if (classes is IfSet) this.classes.addNonNull(class_);
     readValue = _normalGetter;
     setValue = _normalSetter;
 
     for (View v in this.children) {
       if (v is HLabeledView) {
-        if (v.labelField is ViewWithWidth) {
-          final ViewWithWidth lab = v.labelField as ViewWithWidth;
+        if (v.labelField is Widget) {
+          final Widget lab = v.labelField as Widget;
           lab.width ??= hLabelWidth;
           lab.minWidth ??= this.hLabelMinWidth;
           lab.maxWidth ??= hLabelMaxWidth;
