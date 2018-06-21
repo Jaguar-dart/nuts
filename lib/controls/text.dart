@@ -3,42 +3,42 @@ import 'package:nuts/nuts.dart';
 class TextField extends Object with WidgetMixin implements Widget {
   String key;
   final IfSet<String> classes;
-  final Callback onClick;
+  final onClick = StreamBackedEmitter<ClickEvent>();
 
-  TextField(
-      {this.key,
-      /* String | Stream<String> | Reactive<String> */ text,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ width,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ minWidth,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ maxWidth,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ height,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ minHeight,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ maxHeight,
+  TextField({
+    this.key,
+    /* String | Stream<String> | Reactive<String> */ text,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ width,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ minWidth,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ maxWidth,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ height,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ minHeight,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ maxHeight,
 
-      /* Distance | Stream<Distance> | Reactive<Distance> */ marginLeft,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ marginTop,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ marginRight,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ marginBottom,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ marginLeft,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ marginTop,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ marginRight,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ marginBottom,
 
-      /* Distance | Stream<Distance> | Reactive<Distance> */ paddingLeft,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ paddingTop,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ paddingRight,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ paddingBottom,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ paddingLeft,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ paddingTop,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ paddingRight,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ paddingBottom,
 
-      /* Distance | Stream<Distance> | Reactive<Distance> */ left,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ top,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ right,
-      /* Distance | Stream<Distance> | Reactive<Distance> */ bottom,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ left,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ top,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ right,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ bottom,
 
-      /* bool | Stream<bool> | Reactive<bool> */ bold,
+    /* bool | Stream<bool> | Reactive<bool> */ bold,
 
-      /* String | Stream<String> | Reactive<String> */ fontFamily,
-      /* String | Stream<String> | Reactive<Stream> */ color,
-        /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
-      String class_,
-      Iterable<String> classes,
-      this.onClick})
-      : classes = classes is IfSet<String>
+    /* String | Stream<String> | Reactive<String> */ fontFamily,
+    /* String | Stream<String> | Reactive<Stream> */ color,
+    /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
+    String class_,
+    Iterable<String> classes,
+    /* Callback | ValueCallback */ onClick,
+  }) : classes = classes is IfSet<String>
             ? classes
             : IfSet<String>.union(classes, class_) {
     if (classes is IfSet) this.classes.addNonNull(class_);
@@ -65,6 +65,8 @@ class TextField extends Object with WidgetMixin implements Widget {
     fontFamilyProperty.setHowever(fontFamily);
     colorProperty.setHowever(color);
     backgroundColorProperty.setHowever(backgroundColor);
+
+    if(onClick != null) this.onClick.on(onClick);
   }
 
   final textProperty = BackedReactive<String>();
@@ -109,9 +111,7 @@ class LabeledField extends Object
   }
 }
 
-class VLabeledField extends Object
-    with WidgetMixin
-    implements VLabeledView {
+class VLabeledField extends Object with WidgetMixin implements VLabeledView {
   String key;
   final IfSet<String> classes;
   TextField labelField;

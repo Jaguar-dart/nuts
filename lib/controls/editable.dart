@@ -1,9 +1,8 @@
 import 'package:nuts/nuts.dart';
 
 abstract class EditView<T> implements View {
-  // TODO convert [value] to reactive property
-  ValueGetter<T> readValue;
-  ValueSetter<T> setValue;
+  BackedReactive<T> get valueProperty;
+  T value;
   void setCastValue(v);
 }
 
@@ -12,61 +11,59 @@ class TextEdit extends Object
     implements EditView<String>, Widget {
   String key;
   final IfSet<String> classes;
-  String initial;
   String placeholder;
-  bool bold;
-  Distance width;
-  Distance minWidth;
-  Distance maxWidth;
   TextEdit({
-    this.initial,
     this.placeholder,
-    this.bold: false,
     this.key,
-    this.width,
-    this.minWidth,
-    this.maxWidth,
+    /* String | Stream<String> | Reactive<String> */ value,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ width,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ minWidth,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ maxWidth,
     String class_,
     Iterable<String> classes,
   }) : classes = classes is IfSet<String>
             ? classes
             : IfSet<String>.union(classes, class_) {
     if (classes is IfSet) this.classes.addNonNull(class_);
+    valueProperty.setHowever(value);
+    widthProperty.setHowever(width);
+    minWidthProperty.setHowever(minWidth);
+    maxWidthProperty.setHowever(maxWidth);
   }
 
-  ValueGetter<String> readValue;
-  ValueSetter<String> setValue;
-  void setCastValue(v) => setValue(v as String);
+  final valueProperty = BackedReactive<String>();
+  String get value => valueProperty.value;
+  set value(String value) => valueProperty.value = value;
+  void setCastValue(v) => valueProperty.value = value;
 }
 
 class IntEdit extends Object with WidgetMixin implements EditView<int>, Widget {
   String key;
   final IfSet<String> classes;
-  int initial;
   String placeholder;
-  bool bold;
-  Distance width;
-  Distance minWidth;
-  Distance maxWidth;
   IntEdit({
-    this.initial,
     this.placeholder,
-    this.bold: false,
     this.key,
-    this.width,
-    this.minWidth,
-    this.maxWidth,
+    /* int | Stream<int> | Reactive<int> */ value,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ width,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ minWidth,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ maxWidth,
     String class_,
     Iterable<String> classes,
   }) : classes = classes is IfSet<String>
             ? classes
             : IfSet<String>.union(classes, class_) {
     if (classes is IfSet) this.classes.addNonNull(class_);
+    valueProperty.setHowever(value);
+    widthProperty.setHowever(width);
+    minWidthProperty.setHowever(minWidth);
+    maxWidthProperty.setHowever(maxWidth);
   }
 
-  ValueGetter<int> readValue;
-  ValueSetter<int> setValue;
-  void setCastValue(v) => setValue(v as int);
+  final valueProperty = BackedReactive<int>();
+  int get value => valueProperty.value;
+  set value(int value) => valueProperty.value = value;
+  void setCastValue(v) => valueProperty.value = value;
 }
 
 class LabeledEdit<T> extends Object
@@ -95,14 +92,10 @@ class LabeledEdit<T> extends Object
     this.labelField.classes.add('label');
   }
 
-  ValueGetter<T> get readValue => labelled.readValue;
-
-  set readValue(ValueGetter<T> value) => labelled.readValue = value;
-
-  ValueSetter<T> get setValue => labelled.setValue;
-
-  set setValue(ValueSetter<T> value) => labelled.setValue = value;
-  void setCastValue(v) => setValue(v as T);
+  BackedReactive<T> get valueProperty => labelled.valueProperty;
+  T get value => labelled.value;
+  set value(T value) => valueProperty.value = value;
+  void setCastValue(v) => valueProperty.value = value;
 }
 
 class Form extends Object
@@ -111,8 +104,8 @@ class Form extends Object
   @override
   String key;
   final IfSet<String> classes;
-  IfList<View> children;
-  Distance hLabelWidth;
+  final IfList<View> children;
+  Distance hLabelWidth; // TODO
   Distance hLabelMinWidth;
   Distance hLabelMaxWidth;
 
@@ -131,8 +124,9 @@ class Form extends Object
             ? classes
             : IfSet<String>.union(classes, class_) {
     if (classes is IfSet) this.classes.addNonNull(class_);
-    readValue = _normalGetter;
-    setValue = _normalSetter;
+
+    valueProperty.getter = _normalGetter;
+    valueProperty.values.listen(_normalSetter);
 
     for (View v in this.children) {
       if (v is HLabeledView) {
@@ -145,17 +139,17 @@ class Form extends Object
       }
     }
   }
-  void setCastValue(v) => setValue(v as Map<String, dynamic>);
 
-  ValueGetter<Map<String, dynamic>> readValue;
-
-  ValueSetter<Map<String, dynamic>> setValue;
+  final valueProperty = BackedReactive<Map<String, dynamic>>();
+  Map<String, dynamic> get value => valueProperty.value;
+  set value(Map<String, dynamic> value) => valueProperty.value = value;
+  void setCastValue(v) => valueProperty.value = value;
 
   Map<String, dynamic> _normalGetter() {
     var ret = <String, dynamic>{};
     for (View child in children) {
       if (child is EditView) {
-        if (child.key != null) ret[child.key] = child.readValue();
+        if (child.key != null) ret[child.key] = child.value;
       }
     }
     return ret;

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+export 'event.dart';
 export 'list.dart';
 export 'set.dart';
 export 'map.dart';

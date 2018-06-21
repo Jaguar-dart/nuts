@@ -3,6 +3,7 @@ import 'package:nuts/nuts.dart';
 
 export 'containers.dart';
 export 'editable.dart';
+export 'event.dart';
 export 'measure.dart';
 export 'table.dart';
 export 'text.dart';
@@ -32,8 +33,6 @@ abstract class ConditionalComponent implements Component {}
 
 // TODO
 abstract class BoolComponent implements Component {}
-
-typedef dynamic Callback();
 
 enum VAlign { top, middle, bottom }
 enum HAlign { left, center, right }

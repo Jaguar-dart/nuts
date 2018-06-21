@@ -158,16 +158,11 @@ Element variableViewRenderer(final field, Renderer<Element> renderers) {
 
 Element textEditRenderer(final field, Renderer<Element> renderers) {
   if (field is TextEdit) {
-    var ret = new TextInputElement()
-      ..classes.add('textinput')
-      ..value = field.initial ?? '';
+    var ret = new TextInputElement()..classes.add('textinput');
     if (field.placeholder != null)
       ret.placeholder = field.placeholder; // TODO rx
-    if (field.bold) ret.style.fontWeight = 'bold';
-    field.readValue = () => ret.value;
-    field.setValue = (v) {
-      ret.value = v ?? '';
-    };
+    field.valueProperty.listen((v) => ret.value = v ?? '');
+    field.valueProperty.getter = () => ret.value;
     handleWidget(ret, field);
     return ret;
   }
@@ -191,14 +186,11 @@ Element labeledEditRenderer(final field, Renderer<Element> renderers) {
 
 Element intEditRenderer(final field, Renderer<Element> renderers) {
   if (field is IntEdit) {
-    var ret = new TextInputElement()
-      ..classes.add('textinput')
-      ..value = field.initial?.toString() ?? '';
+    var ret = new TextInputElement()..classes.add('textinput');
     if (field.placeholder != null)
       ret.placeholder = field.placeholder; // TODO rx
-    field.readValue = () => int.tryParse(ret.value);
-    void setValue(int v) => ret.value = v?.toString() ?? '';
-    field.setValue = setValue;
+    field.valueProperty.listen((v) => ret.value = v?.toString() ?? '');
+    field.valueProperty.getter = () => int.tryParse(ret.value) ?? null;
     handleWidget(ret, field);
     return ret;
   }
@@ -211,7 +203,12 @@ Element textFieldRenderer(final field, _) {
     var ret = new DivElement()
       ..classes.add('textfield')
       ..text = field.text;
-    if (field.onClick != null) ret.onClick.listen((_) => field.onClick());  // TODO
+    field.onClick
+        .emitStream(ret.onClick.map((e) => ClickEvent(field, e.offset)));
+    /*
+    if (field.onClick != null)
+      ret.onClick.listen((_) => field.onClick()); // TODO
+      */
     field.textProperty.values.listen((v) => ret.text = v ?? '');
     field.textProperty.getter = () => ret.text;
     handleWidget(ret, field);
@@ -230,8 +227,7 @@ Element intFieldRenderer(final field, _) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception(
-      'intFieldRenderer cannot render ${field.runtimeType}');
+  throw new Exception('intFieldRenderer cannot render ${field.runtimeType}');
 }
 
 Element labeledFieldRenderer(final field, Renderer<Element> renderers) {
@@ -310,8 +306,7 @@ Element boxRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception(
-      'boxRenderer cannot render ${field.runtimeType}');
+  throw new Exception('boxRenderer cannot render ${field.runtimeType}');
 }
 
 String vAlignToCssAlignItems(VAlign align) {
@@ -362,8 +357,7 @@ Element hBoxRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception(
-      'hBoxRenderer cannot render ${field.runtimeType}');
+  throw new Exception('hBoxRenderer cannot render ${field.runtimeType}');
 }
 
 Element buttonRenderer(final field, Renderer<Element> renderers) {
@@ -379,8 +373,7 @@ Element buttonRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception(
-      'buttonRenderer cannot render ${field.runtimeType}');
+  throw new Exception('buttonRenderer cannot render ${field.runtimeType}');
 }
 
 Element tableRenderer(final field, Renderer<Element> renderers) {
@@ -424,8 +417,7 @@ Element tableRenderer(final field, Renderer<Element> renderers) {
           "cellpadding": "0",
         }));
   }
-  throw new Exception(
-      'tableRenderer cannot render ${field.runtimeType}');
+  throw new Exception('tableRenderer cannot render ${field.runtimeType}');
 }
 
 Element formRenderer(final field, Renderer<Element> renderers) {
@@ -437,8 +429,7 @@ Element formRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception(
-      'formRenderer cannot render ${field.runtimeType}');
+  throw new Exception('formRenderer cannot render ${field.runtimeType}');
 }
 
 class HtmlRenderer extends Renderer<Element> {
