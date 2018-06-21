@@ -45,6 +45,8 @@ class IfList<E> extends DelegatingList<E> implements List<E> {
     _changes.add(ListChangeNotification<E>.set(value, index));
   }
 
+  void _add(E element) => super.add(element);
+
   void add(E element) {
     super.add(element);
     _changes.add(ListChangeNotification<E>.insert(element, length - 1));
@@ -86,9 +88,11 @@ class IfList<E> extends DelegatingList<E> implements List<E> {
   Stream<ListChangeNotification<E>> get onChange {
     final ret = StreamController<ListChangeNotification<E>>();
     final now = DateTime.now();
+    /*
     for (int i = 0; i < length; i++) {
       ret.add(new ListChangeNotification<E>.insert(this[i], i));
     }
+    */
     _onChange.skipWhile((m) => m.time.isBefore(now)).listen((v) => ret.add(v));
     return ret.stream.asBroadcastStream();
   }
@@ -106,6 +110,7 @@ class RxChildList<S> extends IfList<View> {
   final ChildrenListComposer<S> composer;
 
   RxChildList(this.binding, this.composer) {
+    for(S v in binding) _add(composer(v));
     binding.onChange.listen((ListChangeNotification<S> n) {
       if (n.op == ListChangeOp.add) {
         insert(n.pos, composer(n.element));

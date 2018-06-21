@@ -77,9 +77,7 @@ class StoredReactive<T> implements Reactive<T> {
     reactive.values.listen((v) => value = v);
   }
 
-  void bindStream(Stream<T> stream) {
-    stream.listen((v) => value = v);
-  }
+  void bindStream(Stream<T> stream) => stream.listen((v) => value = v);
 
   void setHowever(/* T | Stream<T> | Reactive<T> */ other) {
     if (other is Reactive<T>) {
@@ -121,8 +119,7 @@ class BackedReactive<T> implements Reactive<T> {
     final ret = StreamController<Change<T>>();
     ret.add(Change<T>(value, null));
     _onChange.listen((v) => ret.add(v));
-    var ret1 = ret.stream.asBroadcastStream();
-    return ret1;
+    return ret.stream.asBroadcastStream();
   }
 
   Stream<T> get values => onChange.map((c) => c.neu);
@@ -132,9 +129,7 @@ class BackedReactive<T> implements Reactive<T> {
     reactive.values.listen((v) => value = v);
   }
 
-  void bindStream(Stream<T> stream) {
-    stream.listen((v) => value = v);
-  }
+  void bindStream(Stream<T> stream) => stream.listen((v) => value = v);
 
   void setHowever(/* T | Stream<T> | Reactive<T> */ other) {
     if (other is Reactive<T>) {

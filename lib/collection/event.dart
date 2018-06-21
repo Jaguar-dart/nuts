@@ -8,14 +8,16 @@ typedef dynamic Callback();
 abstract class Emitter<T> {
   void on(/* Callback | ValueCallback */ callback);
   StreamSubscription<T> listen(/* Callback | ValueCallback */ callback);
-  void emitOther(EmitableEmitter<T> other);
   Stream<T> get asStream;
+  void pipeToOther(EmitableEmitter<T> other);
+  void pipeToRx(Reactive<T> other);
 }
 
 abstract class EmitableEmitter<T> implements Emitter<T> {
   void emit(T value);
   void emitAll(Iterable<T> values);
   void emitStream(Stream<T> value);
+  void emitOther(EmitableEmitter<T> other);
 }
 
 class StreamBackedEmitter<T> implements EmitableEmitter<T> {
@@ -55,5 +57,7 @@ class StreamBackedEmitter<T> implements EmitableEmitter<T> {
 
   Stream<T> get asStream => _stream;
 
-  void bindRx(Reactive<T> other) => other.bindStream(_stream);
+  void pipeToOther(EmitableEmitter<T> other) => other.emitOther(this);
+
+  void pipeToRx(Reactive<T> other) => other.bindStream(_stream);
 }

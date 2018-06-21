@@ -163,6 +163,62 @@ Element textEditRenderer(final field, Renderer<Element> renderers) {
       ret.placeholder = field.placeholder; // TODO rx
     field.valueProperty.listen((v) => ret.value = v ?? '');
     field.valueProperty.getter = () => ret.value;
+    ret.onBlur.listen((_) {
+      print(ret.value);
+      field.onCommit.emit(ValueCommitEvent<String>(field, ret.value));
+    });
+    ret.onKeyPress.listen((KeyboardEvent e) {
+      print(ret.value);
+      if (e.keyCode == KeyCode.ENTER) {
+        field.onCommit.emit(ValueCommitEvent<String>(field, ret.value));
+      }
+    });
+    if (field.shouldEscape) {
+      String valueWhenFocus;
+      ret.onFocus.listen((_) {
+        valueWhenFocus = field.value;
+      });
+      ret.onKeyDown.listen((KeyboardEvent e) {
+        if (e.keyCode == KeyCode.ESC) {
+          ret.value = valueWhenFocus ?? '';
+          ret.blur();
+        }
+      });
+    }
+    handleWidget(ret, field);
+    return ret;
+  }
+  throw new Exception(
+      'variableViewRenderer cannot render ${field.runtimeType}');
+}
+
+Element intEditRenderer(final field, Renderer<Element> renderers) {
+  if (field is IntEdit) {
+    var ret = new TextInputElement()..classes.add('textinput');
+    if (field.placeholder != null)
+      ret.placeholder = field.placeholder; // TODO rx
+    field.valueProperty.listen((v) => ret.value = v?.toString() ?? '');
+    field.valueProperty.getter = () => int.tryParse(ret.value) ?? null;
+    ret.onBlur.listen((_) {
+      field.onCommit.emit(ValueCommitEvent<int>(field, field.value));
+    });
+    ret.onKeyPress.listen((KeyboardEvent e) {
+      if (e.keyCode == KeyCode.ENTER) {
+        field.onCommit.emit(ValueCommitEvent<int>(field, field.value));
+      }
+    });
+    if (field.shouldEscape) {
+      int valueWhenFocus;
+      ret.onFocus.listen((_) {
+        valueWhenFocus = field.value;
+      });
+      ret.onKeyDown.listen((KeyboardEvent e) {
+        if (e.keyCode == KeyCode.ESC) {
+          ret.value = valueWhenFocus?.toString() ?? '';
+          ret.blur();
+        }
+      });
+    }
     handleWidget(ret, field);
     return ret;
   }
@@ -184,20 +240,6 @@ Element labeledEditRenderer(final field, Renderer<Element> renderers) {
       'variableViewRenderer cannot render ${field.runtimeType}');
 }
 
-Element intEditRenderer(final field, Renderer<Element> renderers) {
-  if (field is IntEdit) {
-    var ret = new TextInputElement()..classes.add('textinput');
-    if (field.placeholder != null)
-      ret.placeholder = field.placeholder; // TODO rx
-    field.valueProperty.listen((v) => ret.value = v?.toString() ?? '');
-    field.valueProperty.getter = () => int.tryParse(ret.value) ?? null;
-    handleWidget(ret, field);
-    return ret;
-  }
-  throw new Exception(
-      'variableViewRenderer cannot render ${field.runtimeType}');
-}
-
 Element textFieldRenderer(final field, _) {
   if (field is TextField) {
     var ret = new DivElement()
@@ -205,10 +247,6 @@ Element textFieldRenderer(final field, _) {
       ..text = field.text;
     field.onClick
         .emitStream(ret.onClick.map((e) => ClickEvent(field, e.offset)));
-    /*
-    if (field.onClick != null)
-      ret.onClick.listen((_) => field.onClick()); // TODO
-      */
     field.textProperty.values.listen((v) => ret.text = v ?? '');
     field.textProperty.getter = () => ret.text;
     handleWidget(ret, field);
@@ -293,6 +331,7 @@ Element boxRenderer(final field, Renderer<Element> renderers) {
       ret.style.justifyContent = vAlignToCssJustifyContent(field.vAlign);
     if (field.hAlign != null)
       ret.style.alignItems = hAlignToCssAlignItems(field.hAlign);
+    for(View child in field.children) ret.children.add(renderers.render(child));
     field.children.onChange.listen((e) {
       if (e.op == ListChangeOp.add)
         ret.children.insert(e.pos, renderers.render(e.element));
@@ -303,6 +342,8 @@ Element boxRenderer(final field, Renderer<Element> renderers) {
       else
         ret.children.clear();
     });
+    field.onClick
+        .emitStream(ret.onClick.map((e) => ClickEvent(field, e.offset)));
     handleWidget(ret, field);
     return ret;
   }
@@ -344,6 +385,7 @@ Element hBoxRenderer(final field, Renderer<Element> renderers) {
       ret.style.alignItems = vAlignToCssAlignItems(field.vAlign);
     if (field.hAlign != null)
       ret.style.justifyContent = hAlignToCssJustifyContent(field.hAlign);
+    for(View child in field.children) ret.children.add(renderers.render(child));
     field.children.onChange.listen((e) {
       if (e.op == ListChangeOp.add)
         ret.children.insert(e.pos, renderers.render(e.element));
@@ -354,6 +396,8 @@ Element hBoxRenderer(final field, Renderer<Element> renderers) {
       else
         ret.children.clear();
     });
+    field.onClick
+        .emitStream(ret.onClick.map((e) => ClickEvent(field, e.offset)));
     handleWidget(ret, field);
     return ret;
   }

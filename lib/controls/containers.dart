@@ -4,6 +4,7 @@ class Box extends Object with WidgetMixin implements Container {
   final String key;
   final IfList<View> children;
   final IfSet<String> classes;
+  final onClick = StreamBackedEmitter<ClickEvent>();
   HAlign hAlign; // TODO convert to rx property
   VAlign vAlign; // TODO convert to rx property
   Box({
@@ -41,6 +42,7 @@ class Box extends Object with WidgetMixin implements Container {
     /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
     EdgeInset padding,
     EdgeInset margin,
+    /* Callback | ValueCallback */ onClick,
     this.hAlign,
     this.vAlign,
   })  : children = children is RxChildList
@@ -75,6 +77,7 @@ class Box extends Object with WidgetMixin implements Container {
     backgroundColorProperty.setHowever(backgroundColor);
     if (padding != null) this.padding = padding;
     if (margin != null) this.margin = margin;
+    if(onClick != null) this.onClick.on(onClick);
   }
 
   void addChild(View v) => children.add(v);
@@ -100,6 +103,7 @@ class HBox extends Object with WidgetMixin implements Container {
   String key;
   final IfList<View> children;
   final IfSet<String> classes;
+  final onClick = StreamBackedEmitter<ClickEvent>();
   HAlign hAlign; // TODO convert to rx property
   VAlign vAlign; // TODO convert to rx property
   HBox({
@@ -137,6 +141,7 @@ class HBox extends Object with WidgetMixin implements Container {
     /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
     EdgeInset padding,
     EdgeInset margin,
+    /* Callback | ValueCallback */ onClick,
     this.hAlign,
     this.vAlign: VAlign.middle,
   })  : children = children is RxChildList
@@ -171,6 +176,7 @@ class HBox extends Object with WidgetMixin implements Container {
     backgroundColorProperty.setHowever(backgroundColor);
     if (padding != null) this.padding = padding;
     if (margin != null) this.margin = margin;
+    if(onClick != null) this.onClick.on(onClick);
   }
 
   void addChild(View v) => children.add(v);

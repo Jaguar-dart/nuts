@@ -4,14 +4,17 @@ abstract class EditView<T> implements View {
   BackedReactive<T> get valueProperty;
   T value;
   void setCastValue(v);
+  StreamBackedEmitter<ValueCommitEvent<T>> get onCommit;
 }
 
-class TextEdit extends Object
-    with WidgetMixin
-    implements EditView<String>, Widget {
+abstract class EditWidget<T> implements EditView<T>, Widget {}
+
+class TextEdit extends Object with WidgetMixin implements EditWidget<String> {
   String key;
   final IfSet<String> classes;
   String placeholder;
+  final onCommit = StreamBackedEmitter<ValueCommitEvent<String>>();
+  final bool shouldEscape;
   TextEdit({
     this.placeholder,
     this.key,
@@ -19,8 +22,16 @@ class TextEdit extends Object
     /* Distance | Stream<Distance> | Reactive<Distance> */ width,
     /* Distance | Stream<Distance> | Reactive<Distance> */ minWidth,
     /* Distance | Stream<Distance> | Reactive<Distance> */ maxWidth,
+
+    /* bool | Stream<bool> | Reactive<bool> */ bold,
+
+    /* String | Stream<String> | Reactive<String> */ fontFamily,
+    /* String | Stream<String> | Reactive<Stream> */ color,
+    /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
+    this.shouldEscape: true,
     String class_,
     Iterable<String> classes,
+    /* Callback | ValueCallback<String> */ onCommit,
   }) : classes = classes is IfSet<String>
             ? classes
             : IfSet<String>.union(classes, class_) {
@@ -29,6 +40,11 @@ class TextEdit extends Object
     widthProperty.setHowever(width);
     minWidthProperty.setHowever(minWidth);
     maxWidthProperty.setHowever(maxWidth);
+    boldProperty.setHowever(bold);
+    fontFamilyProperty.setHowever(fontFamily);
+    colorProperty.setHowever(color);
+    backgroundColorProperty.setHowever(backgroundColor);
+    if (onCommit != null) this.onCommit.on(onCommit);
   }
 
   final valueProperty = BackedReactive<String>();
@@ -37,10 +53,12 @@ class TextEdit extends Object
   void setCastValue(v) => valueProperty.value = value;
 }
 
-class IntEdit extends Object with WidgetMixin implements EditView<int>, Widget {
+class IntEdit extends Object with WidgetMixin implements EditWidget<int> {
   String key;
   final IfSet<String> classes;
   String placeholder;
+  final onCommit = StreamBackedEmitter<ValueCommitEvent<int>>();
+  final bool shouldEscape;
   IntEdit({
     this.placeholder,
     this.key,
@@ -48,8 +66,10 @@ class IntEdit extends Object with WidgetMixin implements EditView<int>, Widget {
     /* Distance | Stream<Distance> | Reactive<Distance> */ width,
     /* Distance | Stream<Distance> | Reactive<Distance> */ minWidth,
     /* Distance | Stream<Distance> | Reactive<Distance> */ maxWidth,
+    this.shouldEscape: true,
     String class_,
     Iterable<String> classes,
+    /* Callback | ValueCallback<int> */ onCommit,
   }) : classes = classes is IfSet<String>
             ? classes
             : IfSet<String>.union(classes, class_) {
@@ -58,6 +78,7 @@ class IntEdit extends Object with WidgetMixin implements EditView<int>, Widget {
     widthProperty.setHowever(width);
     minWidthProperty.setHowever(minWidth);
     maxWidthProperty.setHowever(maxWidth);
+    if (onCommit != null) this.onCommit.on(onCommit);
   }
 
   final valueProperty = BackedReactive<int>();
@@ -83,6 +104,7 @@ class LabeledEdit<T> extends Object
     this.key,
     String class_,
     Iterable<String> classes,
+    /* Callback | ValueCallback<T> */ onCommit,
   })  : labelField = labelField ?? TextField(text: label),
         classes = classes is IfSet<String>
             ? classes
@@ -90,12 +112,14 @@ class LabeledEdit<T> extends Object
     if (classes is IfSet) this.classes.addNonNull(class_);
     this.height = height;
     this.labelField.classes.add('label');
+    if (onCommit != null) this.onCommit.on(onCommit);
   }
 
   BackedReactive<T> get valueProperty => labelled.valueProperty;
   T get value => labelled.value;
   set value(T value) => valueProperty.value = value;
   void setCastValue(v) => valueProperty.value = value;
+  StreamBackedEmitter<ValueCommitEvent<T>> get onCommit => labelled.onCommit;
 }
 
 class Form extends Object
@@ -118,6 +142,7 @@ class Form extends Object
     this.hLabelMaxWidth,
     String class_,
     Iterable<String> classes,
+    /* Callback | ValueCallback<Map<String, dynamic>> */ onCommit,
   })  : children = IfList<View>.union(children, child),
         hLabelMinWidth = hLabelMinWidth ?? FixedDistance(100),
         classes = classes is IfSet<String>
@@ -125,8 +150,8 @@ class Form extends Object
             : IfSet<String>.union(classes, class_) {
     if (classes is IfSet) this.classes.addNonNull(class_);
 
-    valueProperty.getter = _normalGetter;
     valueProperty.values.listen(_normalSetter);
+    valueProperty.getter = _normalGetter;
 
     for (View v in this.children) {
       if (v is HLabeledView) {
@@ -138,6 +163,8 @@ class Form extends Object
         }
       }
     }
+    if (onCommit != null) this.onCommit.on(onCommit);
+    // TODO emit commits
   }
 
   final valueProperty = BackedReactive<Map<String, dynamic>>();
@@ -164,4 +191,7 @@ class Form extends Object
       }
     }
   }
+
+  final onCommit =
+      StreamBackedEmitter<ValueCommitEvent<Map<String, dynamic>>>();
 }

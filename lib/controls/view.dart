@@ -25,6 +25,9 @@ class VariableView<T> implements View {
   final MakeViewFor<T> viewMaker;
   final T initial;
   VariableView(this.initial, this.rebuildOn, this.viewMaker, {this.key});
+  VariableView.rx(Reactive<T> rx, this.viewMaker, {this.key})
+      : initial = rx.value,
+        rebuildOn = rx.values;
   View makeView(dynamic /* T */ v) => viewMaker(v as T);
 }
 
