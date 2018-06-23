@@ -11,6 +11,7 @@ class TableRow implements View {
   final FixedDistance maxHeight;
   Map<String, View> cells;
   TableRow(this.cells, {this.height, this.minHeight, this.maxHeight, this.key});
+  final onRemoved = StreamBackedEmitter<void>();
 }
 
 class ColumnSpec<T> {
@@ -46,6 +47,7 @@ class Table implements View {
   List<TableRow> rows;
 
   final bool isResponsive;
+  final onRemoved = StreamBackedEmitter<void>();
 
   Table({this.spec, this.rows, this.isResponsive: false, this.key});
 

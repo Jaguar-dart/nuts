@@ -3,8 +3,6 @@ import 'package:nuts/nuts.dart';
 class TextField extends Object with WidgetMixin implements Widget {
   String key;
   final IfSet<String> classes;
-  final onClick = StreamBackedEmitter<ClickEvent>();
-
   TextField({
     this.key,
     /* String | Stream<String> | Reactive<String> */ text,
@@ -66,7 +64,7 @@ class TextField extends Object with WidgetMixin implements Widget {
     colorProperty.setHowever(color);
     backgroundColorProperty.setHowever(backgroundColor);
 
-    if(onClick != null) this.onClick.on(onClick);
+    if (onClick != null) this.onClick.on(onClick);
   }
 
   final textProperty = BackedReactive<String>();
@@ -165,8 +163,6 @@ class Button extends Object with WidgetMixin implements Widget {
 
   final String text;
 
-  final Callback onClick;
-
   final String tip;
 
   final String color;
@@ -176,7 +172,7 @@ class Button extends Object with WidgetMixin implements Widget {
   Button(
       {this.icon,
       this.text,
-      this.onClick,
+      /* Callback | ValueCallback */ onClick,
       this.tip,
       this.color: blue,
       this.fontSize,
@@ -187,6 +183,8 @@ class Button extends Object with WidgetMixin implements Widget {
             ? classes
             : IfSet<String>.union(classes, class_) {
     if (classes is IfSet) this.classes.addNonNull(class_);
+
+    if (onClick != null) this.onClick.on(onClick);
   }
 
   static const String blue = '#2687c1';

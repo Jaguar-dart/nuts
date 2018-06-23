@@ -12,6 +12,20 @@
     box-sizing: border-box;
 }
 
+.absolute-layout {
+    box-sizing: border-box;
+    position: absolute;
+}
+
+.relative-layout {
+    box-sizing: border-box;
+    position: relative;
+}
+
+.tin-layout {
+    box-sizing: border-box;
+}
+
 .button {
     cursor: pointer;
     filter: brightness(100%) drop-shadow(0px 0px 0px);

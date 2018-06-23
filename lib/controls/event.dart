@@ -6,7 +6,9 @@ class ClickEvent {
 
   final Point<num> offset;
 
-  ClickEvent(this.view, this.offset);
+  final int button;
+
+  ClickEvent(this.view, this.offset, this.button);
 
   /// Key of the [View] on which the event occurred
   String get key => view.key;

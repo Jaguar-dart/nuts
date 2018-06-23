@@ -8,8 +8,14 @@ class Counter implements Component {
 
   int count = 0;
 
+  Counter() {
+    view = _makeView();
+  }
+
   @override
-  View makeView() {
+  View view;
+
+  View _makeView() {
     Box ret;
     ret = Box(children: [
       TextField(text: 'Count: $count', key: 'info'),

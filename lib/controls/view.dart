@@ -8,22 +8,34 @@ export 'measure.dart';
 export 'table.dart';
 export 'text.dart';
 
+export 'package:nuts/collection/collection.dart';
+
 abstract class View {
   String get key;
 }
 
+abstract class RemoveProcessor implements View {
+  EmitableEmitter<void> get onRemoved;
+}
+
+void emitRemoved(View view) {
+  if (view is RemoveProcessor) view.onRemoved.emit(null);
+  if (view is Component) emitRemoved(view.view);
+}
+
 abstract class Component implements View {
-  View makeView();
+  View get view;
 }
 
 typedef View MakeViewFor<T>(T value);
 
 /// A pseudo-component that can reactively render different views
-class VariableView<T> implements View {
+class VariableView<T> implements View, RemoveProcessor {
   final String key;
   final Stream<T> rebuildOn;
   final MakeViewFor<T> viewMaker;
   final T initial;
+  final onRemoved = StreamBackedEmitter<void>();
   VariableView(this.initial, this.rebuildOn, this.viewMaker, {this.key});
   VariableView.rx(Reactive<T> rx, this.viewMaker, {this.key})
       : initial = rx.value,
@@ -91,9 +103,14 @@ abstract class Widget implements View {
   EdgeInset padding;
   // TODO margin property
   EdgeInset margin;
+
+  StreamBackedEmitter<ClickEvent> get onClick;
+  StreamBackedEmitter<ClickEvent> get onMouseDown;
+  StreamBackedEmitter<ClickEvent> get onMouseMove;
+  StreamBackedEmitter<ClickEvent> get onMouseUp;
 }
 
-abstract class Container implements Widget {
+abstract class Container implements Widget, RemoveProcessor {
   T getByKey<T extends View>(String key);
   T deepGetByKey<T extends View>(Iterable<String> keys);
   IfList<View> get children;
@@ -213,4 +230,9 @@ abstract class WidgetMixin implements Widget {
     marginRight = value.right;
     marginBottom = value.bottom;
   }
+
+  final onClick = StreamBackedEmitter<ClickEvent>();
+  final onMouseDown = StreamBackedEmitter<ClickEvent>();
+  final onMouseMove = StreamBackedEmitter<ClickEvent>();
+  final onMouseUp = StreamBackedEmitter<ClickEvent>();
 }

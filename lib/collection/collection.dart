@@ -14,7 +14,8 @@ typedef void ValueSetter<T>(T val);
 class Change<T> {
   final T old;
   final T neu;
-  Change(this.neu, this.old);
+  final DateTime time;
+  Change(this.neu, this.old, {DateTime time}) : time = DateTime.now();
   String toString() => 'Change(new: $neu, old: $old)';
 }
 
@@ -64,9 +65,12 @@ class StoredReactive<T> implements Reactive<T> {
   Stream<Change<T>> _onChange;
 
   Stream<Change<T>> get onChange {
+    var now = DateTime.now();
     final ret = StreamController<Change<T>>();
     ret.add(Change<T>(value, null));
-    _onChange.listen((v) => ret.add(v));
+    ret.addStream(_onChange.skipWhile((v) {
+      return v.time.isBefore(now);
+    }));
     return ret.stream.asBroadcastStream();
   }
 
@@ -116,9 +120,11 @@ class BackedReactive<T> implements Reactive<T> {
   Stream<Change<T>> _onChange;
 
   Stream<Change<T>> get onChange {
+    // var now = DateTime.now();
     final ret = StreamController<Change<T>>();
     ret.add(Change<T>(value, null));
-    _onChange.listen((v) => ret.add(v));
+    ret.addStream(_onChange);
+    // ret.addStream(_onChange.skipWhile((v) => v.time.isBefore(now)));
     return ret.stream.asBroadcastStream();
   }
 

@@ -15,16 +15,18 @@ abstract class Renderer<E> {
   ViewRenderer<E, dynamic> getFor(View view);
 
   E render(final View view) {
-    if (view == null) throw new Exception("View cannot be null!");
-    if (view is Component) return render(view.makeView());
+    if (view == null) {
+      throw new Exception("View cannot be null!");
+    }
+    if (view is Component) return render(view.view);
     ViewRenderer<E, View> ren = getFor(view);
     if (ren != null) return ren(view, this);
     // Handle types with generic arguments
-    for(ViewRenderer<E, View> r in allRenderers) {
+    for (ViewRenderer<E, View> r in allRenderers) {
       try {
         E ret = r(view, this);
         return ret;
-      } catch(e) {
+      } catch (e) {
         // print('$r:');
         // print(e);
       }

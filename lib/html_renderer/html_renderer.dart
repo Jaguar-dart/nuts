@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:html';
 import 'package:nuts/nuts.dart';
 
@@ -14,11 +15,15 @@ final HtmlRenderer defaultRenderers = new HtmlRenderer()
   ..register<LabeledEdit>(labeledEditRenderer)
   ..register<IntEdit>(intEditRenderer)
   ..register<Form>(formRenderer)
-  ..register<VariableView>(variableViewRenderer);
+  ..register<VariableView>(variableViewRenderer)
+  ..register<Absolute>(absoluteRenderer)
+  ..register<Relative>(relativeRenderer)
+  ..register<Tin>(tinRenderer);
 
 void handleWidget(final Element el, final View view) {
   if (view is Widget) {
-    view.classes.onChange.listen((e) {
+    el.classes.addAll(view.classes);
+    var classesSub = view.classes.onChange.listen((e) {
       if (e.op == SetChangeOp.add) {
         el.classes.add(e.element);
       } else {
@@ -26,27 +31,27 @@ void handleWidget(final Element el, final View view) {
       }
     });
 
-    view.leftProperty.values.listen((Distance left) {
+    var leftSub = view.leftProperty.values.listen((Distance left) {
       if (left != null) el.style.left = left.toString();
     });
     view.leftProperty.getter = () => FixedDistance(el.offsetLeft);
 
-    view.topProperty.values.listen((Distance top) {
+    var topSub = view.topProperty.values.listen((Distance top) {
       if (top != null) el.style.top = top.toString();
     });
     view.topProperty.getter = () => FixedDistance(el.offsetTop);
 
-    view.rightProperty.values.listen((Distance right) {
+    var rightSub = view.rightProperty.values.listen((Distance right) {
       if (right != null) el.style.right = right.toString();
     });
     // TODO view.rightProperty.getter = () => FixedDistance(el.offsetRight);
 
-    view.bottomProperty.values.listen((Distance bottom) {
+    var bottomSub = view.bottomProperty.values.listen((Distance bottom) {
       if (bottom != null) el.style.bottom = bottom.toString();
     });
     // TODO view.bottomProperty.getter = () => FixedDistance(el.offsetBottom);
 
-    view.widthProperty.values.listen((Distance width) {
+    var widthSub = view.widthProperty.values.listen((Distance width) {
       if (width is FlexSize) {
         el.style.flex = width.toString();
       } else if (width != null) {
@@ -55,15 +60,15 @@ void handleWidget(final Element el, final View view) {
     });
     view.widthProperty.getter = () => FixedDistance(el.offsetWidth);
 
-    view.minWidthProperty.values.listen((Distance width) {
+    var minWidthSub = view.minWidthProperty.values.listen((Distance width) {
       if (width != null) el.style.minWidth = width.toString();
     });
 
-    view.maxWidthProperty.values.listen((Distance width) {
+    var maxWidthSub = view.maxWidthProperty.values.listen((Distance width) {
       if (width != null) el.style.maxWidth = width.toString();
     });
 
-    view.heightProperty.values.listen((Distance height) {
+    var heightSub = view.heightProperty.values.listen((Distance height) {
       if (height is FlexSize) {
         el.style.flex = height.toString();
       } else if (height != null) {
@@ -72,83 +77,134 @@ void handleWidget(final Element el, final View view) {
     });
     view.heightProperty.getter = () => FixedDistance(el.offsetHeight);
 
-    view.minHeightProperty.values.listen((Distance height) {
+    var minHeightSub = view.minHeightProperty.values.listen((Distance height) {
       if (height != null) el.style.minHeight = height.toString();
     });
 
-    view.maxHeightProperty.values.listen((Distance height) {
+    var maxHeightSub = view.maxHeightProperty.values.listen((Distance height) {
       if (height != null) el.style.maxHeight = height.toString();
     });
 
-    view.backgroundColorProperty.values.listen((String value) {
+    var bgColorSub = view.backgroundColorProperty.values.listen((String value) {
       el.style.backgroundColor = value;
     });
     view.backgroundColorProperty.getter = () => el.style.backgroundColor;
 
-    view.colorProperty.values.listen((String value) {
+    var colorSub = view.colorProperty.values.listen((String value) {
       el.style.color = value;
     });
     view.colorProperty.getter = () => el.style.color;
 
-    view.paddingLeftProperty.values.listen((Distance d) {
+    var paddingLeftSub = view.paddingLeftProperty.values.listen((Distance d) {
       if (d != null) el.style.paddingLeft = d.toString();
     });
     // TODO padding Left getter
 
-    view.paddingTopProperty.values.listen((Distance d) {
+    var paddingTopSub = view.paddingTopProperty.values.listen((Distance d) {
       if (d != null) el.style.paddingTop = d.toString();
     });
     // TODO padding Top getter
 
-    view.paddingRightProperty.values.listen((Distance d) {
+    var paddingRightSub = view.paddingRightProperty.values.listen((Distance d) {
       if (d != null) el.style.paddingRight = d.toString();
     });
     // TODO padding Right getter
 
-    view.paddingBottomProperty.values.listen((Distance d) {
+    var paddingBottomSub =
+        view.paddingBottomProperty.values.listen((Distance d) {
       if (d != null) el.style.paddingBottom = d.toString();
     });
     // TODO padding Bottom getter
 
-    view.marginLeftProperty.values.listen((Distance d) {
+    var marginLeftSub = view.marginLeftProperty.values.listen((Distance d) {
       if (d != null) el.style.marginLeft = d.toString();
     });
     // TODO margin Left getter
 
-    view.marginTopProperty.values.listen((Distance d) {
+    var marginTopSub = view.marginTopProperty.values.listen((Distance d) {
       if (d != null) el.style.marginTop = d.toString();
     });
     // TODO margin Top getter
 
-    view.marginRightProperty.values.listen((Distance d) {
+    var marginRightSub = view.marginRightProperty.values.listen((Distance d) {
       if (d != null) el.style.marginRight = d.toString();
     });
     // TODO margin Right getter
 
-    view.marginBottomProperty.values.listen((Distance d) {
+    var marginBottomSub = view.marginBottomProperty.values.listen((Distance d) {
       if (d != null) el.style.marginBottom = d.toString();
     });
     // TODO margin Bottom getter
 
-    view.boldProperty.values.listen((bool v) {
+    var boldSub = view.boldProperty.values.listen((bool v) {
       if (v != null) el.style.fontWeight = v ? 'bold' : 'normal';
     });
     // TODO bold property
 
-    view.fontFamilyProperty.values.listen((String v) {
+    var fontFamilySub = view.fontFamilyProperty.values.listen((String v) {
       if (v != null) el.style.fontFamily = v;
     });
     // TODO fontFamily property
+
+    view.onClick.emitStream(
+        el.onClick.map((e) => ClickEvent(view, e.offset, e.buttons)));
+    view.onMouseDown.emitStream(
+        el.onMouseDown.map((e) => ClickEvent(view, e.offset, e.buttons)));
+    view.onMouseMove.emitStream(
+        el.onMouseMove.map((e) => ClickEvent(view, e.offset, e.buttons)));
+    view.onMouseUp.emitStream(
+        el.onMouseUp.map((e) => ClickEvent(view, e.offset, e.buttons)));
+
+    if (view is RemoveProcessor) {
+      (view as RemoveProcessor).onRemoved.listen((_) {
+        // TODO
+        classesSub.cancel();
+        leftSub.cancel();
+      });
+    }
   }
 }
 
 Element variableViewRenderer(final field, Renderer<Element> renderers) {
   if (field is VariableView) {
-    Element el = renderers.render(field.makeView(field.initial));
-    field.rebuildOn.listen((v) {
-      Element newEl = renderers.render(field.makeView(v));
-      el.replaceWith(newEl);
-      el = newEl;
+    dynamic oldData = field.initial;
+    View oldV = field.makeView(oldData);
+    Element el = renderers.render(oldV);
+    Future f;
+    bool removed = false;
+    StreamSubscription s = field.rebuildOn.listen((data) async {
+      if(oldData == data) return;
+      oldData = data;
+      final c = Completer();
+      if (f != null) {
+        Future oldF = f;
+        f = oldF.then((_) => c.future);
+        await oldF;
+      } else {
+        f = c.future;
+      }
+      View newV = field.makeView(data);
+      Timer.periodic(Duration(microseconds: 50), (t) {
+        if (removed) {
+          t.cancel();
+          emitRemoved(newV);
+          return;
+        }
+        if (!document.body.contains(el)) return;
+        t.cancel();
+        Element newEl = renderers.render(newV);
+        el.replaceWith(newEl);
+        el = newEl;
+        emitRemoved(oldV);
+        oldV = newV;
+        c.complete();
+      });
+    });
+    field.onRemoved.listen(() async {
+      removed = true;
+      s.cancel();
+      emitRemoved(oldV);
+      if (f != null) await f;
     });
     return el;
   }
@@ -164,11 +220,9 @@ Element textEditRenderer(final field, Renderer<Element> renderers) {
     field.valueProperty.listen((v) => ret.value = v ?? '');
     field.valueProperty.getter = () => ret.value;
     ret.onBlur.listen((_) {
-      print(ret.value);
       field.onCommit.emit(ValueCommitEvent<String>(field, ret.value));
     });
     ret.onKeyPress.listen((KeyboardEvent e) {
-      print(ret.value);
       if (e.keyCode == KeyCode.ENTER) {
         field.onCommit.emit(ValueCommitEvent<String>(field, ret.value));
       }
@@ -188,8 +242,7 @@ Element textEditRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception(
-      'variableViewRenderer cannot render ${field.runtimeType}');
+  throw new Exception('textEditRenderer cannot render ${field.runtimeType}');
 }
 
 Element intEditRenderer(final field, Renderer<Element> renderers) {
@@ -222,8 +275,7 @@ Element intEditRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception(
-      'variableViewRenderer cannot render ${field.runtimeType}');
+  throw new Exception('intEditRenderer cannot render ${field.runtimeType}');
 }
 
 Element labeledEditRenderer(final field, Renderer<Element> renderers) {
@@ -236,8 +288,7 @@ Element labeledEditRenderer(final field, Renderer<Element> renderers) {
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception(
-      'variableViewRenderer cannot render ${field.runtimeType}');
+  throw new Exception('labeledEditRenderer cannot render ${field.runtimeType}');
 }
 
 Element textFieldRenderer(final field, _) {
@@ -245,15 +296,12 @@ Element textFieldRenderer(final field, _) {
     var ret = new DivElement()
       ..classes.add('textfield')
       ..text = field.text;
-    field.onClick
-        .emitStream(ret.onClick.map((e) => ClickEvent(field, e.offset)));
     field.textProperty.values.listen((v) => ret.text = v ?? '');
     field.textProperty.getter = () => ret.text;
     handleWidget(ret, field);
     return ret;
   }
-  throw new Exception(
-      'variableViewRenderer cannot render ${field.runtimeType}');
+  throw new Exception('textFieldRenderer cannot render ${field.runtimeType}');
 }
 
 Element intFieldRenderer(final field, _) {
@@ -331,7 +379,8 @@ Element boxRenderer(final field, Renderer<Element> renderers) {
       ret.style.justifyContent = vAlignToCssJustifyContent(field.vAlign);
     if (field.hAlign != null)
       ret.style.alignItems = hAlignToCssAlignItems(field.hAlign);
-    for(View child in field.children) ret.children.add(renderers.render(child));
+    for (View child in field.children)
+      ret.children.add(renderers.render(child));
     field.children.onChange.listen((e) {
       if (e.op == ListChangeOp.add)
         ret.children.insert(e.pos, renderers.render(e.element));
@@ -342,8 +391,6 @@ Element boxRenderer(final field, Renderer<Element> renderers) {
       else
         ret.children.clear();
     });
-    field.onClick
-        .emitStream(ret.onClick.map((e) => ClickEvent(field, e.offset)));
     handleWidget(ret, field);
     return ret;
   }
@@ -385,7 +432,8 @@ Element hBoxRenderer(final field, Renderer<Element> renderers) {
       ret.style.alignItems = vAlignToCssAlignItems(field.vAlign);
     if (field.hAlign != null)
       ret.style.justifyContent = hAlignToCssJustifyContent(field.hAlign);
-    for(View child in field.children) ret.children.add(renderers.render(child));
+    for (View child in field.children)
+      ret.children.add(renderers.render(child));
     field.children.onChange.listen((e) {
       if (e.op == ListChangeOp.add)
         ret.children.insert(e.pos, renderers.render(e.element));
@@ -396,12 +444,73 @@ Element hBoxRenderer(final field, Renderer<Element> renderers) {
       else
         ret.children.clear();
     });
-    field.onClick
-        .emitStream(ret.onClick.map((e) => ClickEvent(field, e.offset)));
     handleWidget(ret, field);
     return ret;
   }
   throw new Exception('hBoxRenderer cannot render ${field.runtimeType}');
+}
+
+Element absoluteRenderer(final field, Renderer<Element> renderers) {
+  if (field is Absolute) {
+    var ret = new DivElement()..classes.add('absolute-layout');
+    for (View child in field.children)
+      ret.children.add(renderers.render(child));
+    field.children.onChange.listen((e) {
+      if (e.op == ListChangeOp.add)
+        ret.children.insert(e.pos, renderers.render(e.element));
+      else if (e.op == ListChangeOp.set)
+        ret.children[e.pos] = renderers.render(e.element);
+      else if (e.op == ListChangeOp.remove)
+        ret.children.removeAt(e.pos);
+      else
+        ret.children.clear();
+    });
+    handleWidget(ret, field);
+    return ret;
+  }
+  throw new Exception('absoluteRenderer cannot render ${field.runtimeType}');
+}
+
+Element relativeRenderer(final field, Renderer<Element> renderers) {
+  if (field is Relative) {
+    var ret = new DivElement()..classes.add('relative-layout');
+    for (View child in field.children)
+      ret.children.add(renderers.render(child));
+    field.children.onChange.listen((e) {
+      if (e.op == ListChangeOp.add)
+        ret.children.insert(e.pos, renderers.render(e.element));
+      else if (e.op == ListChangeOp.set)
+        ret.children[e.pos] = renderers.render(e.element);
+      else if (e.op == ListChangeOp.remove)
+        ret.children.removeAt(e.pos);
+      else
+        ret.children.clear();
+    });
+    handleWidget(ret, field);
+    return ret;
+  }
+  throw new Exception('relativeRenderer cannot render ${field.runtimeType}');
+}
+
+Element tinRenderer(final field, Renderer<Element> renderers) {
+  if (field is Tin) {
+    var ret = new DivElement()..classes.add('tin-layout');
+    for (View child in field.children)
+      ret.children.add(renderers.render(child));
+    field.children.onChange.listen((e) {
+      if (e.op == ListChangeOp.add)
+        ret.children.insert(e.pos, renderers.render(e.element));
+      else if (e.op == ListChangeOp.set)
+        ret.children[e.pos] = renderers.render(e.element);
+      else if (e.op == ListChangeOp.remove)
+        ret.children.removeAt(e.pos);
+      else
+        ret.children.clear();
+    });
+    handleWidget(ret, field);
+    return ret;
+  }
+  throw new Exception('tinRenderer cannot render ${field.runtimeType}');
 }
 
 Element buttonRenderer(final field, Renderer<Element> renderers) {
@@ -413,7 +522,6 @@ Element buttonRenderer(final field, Renderer<Element> renderers) {
     if (field.text != null) ret.append(new SpanElement()..text = field.text);
     if (field.fontSize != null) ret.style.fontSize = '${field.fontSize}px';
     if (field.tip != null) ret.title = field.tip;
-    if (field.onClick != null) ret.onClick.listen((_) => field.onClick());
     handleWidget(ret, field);
     return ret;
   }

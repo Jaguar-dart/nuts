@@ -3,23 +3,16 @@ import 'package:collection/collection.dart';
 import 'collection.dart';
 
 class IfSet<E> extends DelegatingSet<E> implements Set<E> {
-  IfSet() : super(new Set<E>()) {
-    _onChange = _changes.stream.asBroadcastStream();
-  }
+  IfSet() : super(new Set<E>());
 
-  IfSet.from(Iterable elements) : super(Set<E>.from(elements)) {
-    _onChange = _changes.stream.asBroadcastStream();
-  }
+  IfSet.from(Iterable elements) : super(Set<E>.from(elements));
 
   IfSet.union(Iterable<E> elements, [E element])
       : super(Set<E>.from(elements ?? <E>[])) {
-    if (element != null) add(element);
-    _onChange = _changes.stream.asBroadcastStream();
+    if (element != null) _add(element);
   }
 
-  IfSet.of(Iterable<E> elements) : super(Set<E>.of(elements)) {
-    _onChange = _changes.stream.asBroadcastStream();
-  }
+  IfSet.of(Iterable<E> elements) : super(Set<E>.of(elements));
 
   void addIf(/* bool | Condition */ condition, E element) {
     if (condition is Condition) condition = condition();
@@ -31,6 +24,8 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
     if (condition is bool && condition) addAll(elements);
   }
 
+  bool _add(E element) => super.add(element);
+
   bool add(E element) {
     bool ret = super.add(element);
     if (ret) {
@@ -40,7 +35,7 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
   }
 
   bool addNonNull(E element) {
-    if(element == null) return false;
+    if (element == null) return false;
     return add(element);
   }
 
@@ -60,9 +55,18 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
     }
   }
 
-  Stream<SetChangeNotification<E>> _onChange;
+  Stream<SetChangeNotification<E>> __onChange;
 
-  Stream<SetChangeNotification<E>> get onChange => _onChange;
+  Stream<SetChangeNotification<E>> get _onChange =>
+      __onChange ??= _changes.stream.asBroadcastStream();
+
+  // TODO
+  Stream<SetChangeNotification<E>> get onChange {
+    final ret = StreamController<SetChangeNotification<E>>();
+    final now = DateTime.now();
+    ret.addStream(_onChange /*.skipWhile((m) => m.time.isBefore(now))*/);
+    return ret.stream.asBroadcastStream();
+  }
 
   final _changes = StreamController<SetChangeNotification<E>>();
 
@@ -73,14 +77,15 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
       remove(element);
     }
     stream.listen((bool value) {
-      if (value)
+      if (value) {
         add(element);
-      else
+      } else {
         remove(element);
+      }
     });
   }
 
-  void bindBoolReactive(E element, Reactive<bool> other) {
+  void bindBoolRx(E element, Reactive<bool> other) {
     if (other.value) {
       add(element);
     } else {
@@ -124,9 +129,16 @@ class SetChangeNotification<E> {
 
   final SetChangeOp op;
 
-  SetChangeNotification(this.element, this.op);
+  final DateTime time;
 
-  SetChangeNotification.add(this.element) : op = SetChangeOp.add;
+  SetChangeNotification(this.element, this.op, {DateTime time})
+      : time = time ?? DateTime.now();
 
-  SetChangeNotification.remove(this.element) : op = SetChangeOp.remove;
+  SetChangeNotification.add(this.element, {DateTime time})
+      : op = SetChangeOp.add,
+        time = time ?? DateTime.now();
+
+  SetChangeNotification.remove(this.element, {DateTime time})
+      : op = SetChangeOp.remove,
+        time = time ?? DateTime.now();
 }
