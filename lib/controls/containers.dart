@@ -38,8 +38,9 @@ class Box extends Object with WidgetMixin implements Container {
     /* bool | Stream<bool> | Reactive<bool> */ bold,
 
     /* String | Stream<String> | Reactive<String> */ fontFamily,
-    /* String | Stream<String> | Reactive<Stream> */ color,
-    /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
+    /* String | Stream<String> | Reactive<String> */ color,
+    /* String | Stream<String> | Reactive<String> */ backgroundColor,
+    /* String | Stream<String> | Reactive<String> */ backgroundImage,
     EdgeInset padding,
     EdgeInset margin,
     /* Callback | ValueCallback */ onClick,
@@ -75,6 +76,7 @@ class Box extends Object with WidgetMixin implements Container {
     fontFamilyProperty.setHowever(fontFamily);
     colorProperty.setHowever(color);
     backgroundColorProperty.setHowever(backgroundColor);
+    backgroundImageProperty.setHowever(backgroundImage);
     if (padding != null) this.padding = padding;
     if (margin != null) this.margin = margin;
     if (onClick != null) this.onClick.on(onClick);
@@ -142,8 +144,9 @@ class HBox extends Object with WidgetMixin implements Container {
     /* bool | Stream<bool> | Reactive<bool> */ bold,
 
     /* String | Stream<String> | Reactive<String> */ fontFamily,
-    /* String | Stream<String> | Reactive<Stream> */ color,
-    /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
+    /* String | Stream<String> | Reactive<String> */ color,
+    /* String | Stream<String> | Reactive<String> */ backgroundColor,
+    /* String | Stream<String> | Reactive<String> */ backgroundImage,
     EdgeInset padding,
     EdgeInset margin,
     /* Callback | ValueCallback */ onClick,
@@ -179,6 +182,7 @@ class HBox extends Object with WidgetMixin implements Container {
     fontFamilyProperty.setHowever(fontFamily);
     colorProperty.setHowever(color);
     backgroundColorProperty.setHowever(backgroundColor);
+    backgroundImageProperty.setHowever(backgroundImage);
     if (padding != null) this.padding = padding;
     if (margin != null) this.margin = margin;
     if (onClick != null) this.onClick.on(onClick);
@@ -244,8 +248,9 @@ class Absolute extends Object with WidgetMixin implements Container {
     /* bool | Stream<bool> | Reactive<bool> */ bold,
 
     /* String | Stream<String> | Reactive<String> */ fontFamily,
-    /* String | Stream<String> | Reactive<Stream> */ color,
-    /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
+    /* String | Stream<String> | Reactive<String> */ color,
+    /* String | Stream<String> | Reactive<String> */ backgroundColor,
+    /* String | Stream<String> | Reactive<String> */ backgroundImage,
     EdgeInset padding,
     EdgeInset margin,
     /* Callback | ValueCallback */ onClick,
@@ -279,6 +284,7 @@ class Absolute extends Object with WidgetMixin implements Container {
     fontFamilyProperty.setHowever(fontFamily);
     colorProperty.setHowever(color);
     backgroundColorProperty.setHowever(backgroundColor);
+    backgroundImageProperty.setHowever(backgroundImage);
     if (padding != null) this.padding = padding;
     if (margin != null) this.margin = margin;
     if (onClick != null) this.onClick.on(onClick);
@@ -344,8 +350,9 @@ class Relative extends Object with WidgetMixin implements Container {
     /* bool | Stream<bool> | Reactive<bool> */ bold,
 
     /* String | Stream<String> | Reactive<String> */ fontFamily,
-    /* String | Stream<String> | Reactive<Stream> */ color,
-    /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
+    /* String | Stream<String> | Reactive<String> */ color,
+    /* String | Stream<String> | Reactive<String> */ backgroundColor,
+    /* String | Stream<String> | Reactive<String> */ backgroundImage,
     EdgeInset padding,
     EdgeInset margin,
     /* Callback | ValueCallback */ onClick,
@@ -379,6 +386,7 @@ class Relative extends Object with WidgetMixin implements Container {
     fontFamilyProperty.setHowever(fontFamily);
     colorProperty.setHowever(color);
     backgroundColorProperty.setHowever(backgroundColor);
+    backgroundImageProperty.setHowever(backgroundImage);
     if (padding != null) this.padding = padding;
     if (margin != null) this.margin = margin;
     if (onClick != null) this.onClick.on(onClick);
@@ -444,8 +452,9 @@ class Tin extends Object with WidgetMixin implements Container {
     /* bool | Stream<bool> | Reactive<bool> */ bold,
 
     /* String | Stream<String> | Reactive<String> */ fontFamily,
-    /* String | Stream<String> | Reactive<Stream> */ color,
-    /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
+    /* String | Stream<String> | Reactive<String> */ color,
+    /* String | Stream<String> | Reactive<String> */ backgroundColor,
+    /* String | Stream<String> | Reactive<String> */ backgroundImage,
     EdgeInset padding,
     EdgeInset margin,
     /* Callback | ValueCallback */ onClick,
@@ -479,6 +488,7 @@ class Tin extends Object with WidgetMixin implements Container {
     fontFamilyProperty.setHowever(fontFamily);
     colorProperty.setHowever(color);
     backgroundColorProperty.setHowever(backgroundColor);
+    backgroundImageProperty.setHowever(backgroundImage);
     if (padding != null) this.padding = padding;
     if (margin != null) this.margin = margin;
     if (onClick != null) this.onClick.on(onClick);

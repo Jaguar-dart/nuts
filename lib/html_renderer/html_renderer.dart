@@ -11,6 +11,7 @@ final HtmlRenderer defaultRenderers = new HtmlRenderer()
   ..register<Button>(buttonRenderer)
   ..register<IntField>(intFieldRenderer)
   ..register<Table>(tableRenderer)
+  ..register<MultilineEdit>(multilineEditRenderer)
   ..register<TextEdit>(textEditRenderer)
   ..register<LabeledEdit>(labeledEditRenderer)
   ..register<IntEdit>(intEditRenderer)
@@ -89,6 +90,11 @@ void handleWidget(final Element el, final View view) {
       el.style.backgroundColor = value;
     });
     view.backgroundColorProperty.getter = () => el.style.backgroundColor;
+
+    var bgImageSub = view.backgroundImageProperty.values.listen((String value) {
+      el.style.backgroundImage = value;
+    });
+    view.backgroundImageProperty.getter = () => el.style.backgroundImage;
 
     var colorSub = view.colorProperty.values.listen((String value) {
       el.style.color = value;
@@ -173,7 +179,7 @@ Element variableViewRenderer(final field, Renderer<Element> renderers) {
     Future f;
     bool removed = false;
     StreamSubscription s = field.rebuildOn.listen((data) async {
-      if(oldData == data) return;
+      if (oldData == data) return;
       oldData = data;
       final c = Completer();
       if (f != null) {
@@ -210,6 +216,41 @@ Element variableViewRenderer(final field, Renderer<Element> renderers) {
   }
   throw new Exception(
       'variableViewRenderer cannot render ${field.runtimeType}');
+}
+
+Element multilineEditRenderer(final field, Renderer<Element> renderers) {
+  if (field is MultilineEdit) {
+    var ret = new TextAreaElement()..classes.add('multiline');
+    if (field.placeholder != null)
+      ret.placeholder = field.placeholder; // TODO rx
+    field.valueProperty.listen((v) => ret.value = v ?? '');
+    field.valueProperty.getter = () => ret.value;
+    ret.onBlur.listen((_) {
+      print('here');
+      field.onCommit.emit(ValueCommitEvent<String>(field, ret.value));
+    });
+    ret.onKeyPress.listen((KeyboardEvent e) {
+      if (e.shiftKey && e.keyCode == KeyCode.ENTER) {
+        field.onCommit.emit(ValueCommitEvent<String>(field, ret.value));
+        e.preventDefault();
+      }
+    });
+    if (field.shouldEscape) {
+      String valueWhenFocus;
+      ret.onFocus.listen((_) {
+        valueWhenFocus = field.value;
+      });
+      ret.onKeyDown.listen((KeyboardEvent e) {
+        if (e.keyCode == KeyCode.ESC) {
+          ret.value = valueWhenFocus ?? '';
+          ret.blur();
+        }
+      });
+    }
+    handleWidget(ret, field);
+    return ret;
+  }
+  throw new Exception('textEditRenderer cannot render ${field.runtimeType}');
 }
 
 Element textEditRenderer(final field, Renderer<Element> renderers) {

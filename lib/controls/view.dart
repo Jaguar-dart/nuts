@@ -98,6 +98,8 @@ abstract class Widget implements View {
   String color;
   BackedReactive<String> get backgroundColorProperty;
   String backgroundColor;
+  BackedReactive<String> get backgroundImageProperty;
+  String backgroundImage;
 
   // TODO padding property
   EdgeInset padding;
@@ -204,6 +206,10 @@ abstract class WidgetMixin implements Widget {
   final backgroundColorProperty = BackedReactive<String>();
   String get backgroundColor => backgroundColorProperty.value;
   set backgroundColor(String value) => backgroundColorProperty.value = value;
+
+  final backgroundImageProperty = BackedReactive<String>();
+  String get backgroundImage => backgroundImageProperty.value;
+  set backgroundImage(String value) => backgroundImageProperty.value = value;
 
   EdgeInset get padding => EdgeInset(
       left: paddingLeft,

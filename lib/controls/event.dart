@@ -8,7 +8,10 @@ class ClickEvent {
 
   final int button;
 
-  ClickEvent(this.view, this.offset, this.button);
+  final DateTime time;
+
+  ClickEvent(this.view, this.offset, this.button, {DateTime time})
+      : time = time ?? DateTime.now();
 
   /// Key of the [View] on which the event occurred
   String get key => view.key;

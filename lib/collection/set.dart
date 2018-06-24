@@ -98,6 +98,46 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
         remove(element);
     });
   }
+
+  void bindOneOf(Iterable<E> options, Stream<int> other, [int initial]) {
+    {
+      int value = initial;
+      for (int i = 0; i < options.length; i++) {
+        if (value == i)
+          add(options.elementAt(i));
+        else
+          remove(options.elementAt(i));
+      }
+    }
+    other.listen((int value) {
+      for (int i = 0; i < options.length; i++) {
+        if (value == i)
+          add(options.elementAt(i));
+        else
+          remove(options.elementAt(i));
+      }
+    });
+  }
+
+  void bindOneOfRx(Iterable<E> options, Reactive<int> other) {
+    {
+      int value = other.value;
+      for (int i = 0; i < options.length; i++) {
+        if (value == i)
+          add(options.elementAt(i));
+        else
+          remove(options.elementAt(i));
+      }
+    }
+    other.values.listen((int value) {
+      for (int i = 0; i < options.length; i++) {
+        if (value == i)
+          add(options.elementAt(i));
+        else
+          remove(options.elementAt(i));
+      }
+    });
+  }
 }
 
 class Classes extends IfSet<String> {

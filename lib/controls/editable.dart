@@ -195,3 +195,49 @@ class Form extends Object
   final onCommit =
       StreamBackedEmitter<ValueCommitEvent<Map<String, dynamic>>>();
 }
+
+class MultilineEdit extends Object
+    with WidgetMixin
+    implements EditWidget<String> {
+  String key;
+  final IfSet<String> classes;
+  String placeholder;
+  final onCommit = StreamBackedEmitter<ValueCommitEvent<String>>();
+  final bool shouldEscape;
+  MultilineEdit({
+    this.placeholder,
+    this.key,
+    /* String | Stream<String> | Reactive<String> */ value,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ width,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ minWidth,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ maxWidth,
+
+    /* bool | Stream<bool> | Reactive<bool> */ bold,
+
+    /* String | Stream<String> | Reactive<String> */ fontFamily,
+    /* String | Stream<String> | Reactive<Stream> */ color,
+    /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
+    this.shouldEscape: true,
+    String class_,
+    Iterable<String> classes,
+    /* Callback | ValueCallback<String> */ onCommit,
+  }) : classes = classes is IfSet<String>
+            ? classes
+            : IfSet<String>.union(classes, class_) {
+    if (classes is IfSet) this.classes.addNonNull(class_);
+    valueProperty.setHowever(value);
+    widthProperty.setHowever(width);
+    minWidthProperty.setHowever(minWidth);
+    maxWidthProperty.setHowever(maxWidth);
+    boldProperty.setHowever(bold);
+    fontFamilyProperty.setHowever(fontFamily);
+    colorProperty.setHowever(color);
+    backgroundColorProperty.setHowever(backgroundColor);
+    if (onCommit != null) this.onCommit.on(onCommit);
+  }
+
+  final valueProperty = BackedReactive<String>();
+  String get value => valueProperty.value;
+  set value(String value) => valueProperty.value = value;
+  void setCastValue(v) => valueProperty.value = value;
+}
