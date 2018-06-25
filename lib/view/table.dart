@@ -1,4 +1,5 @@
-import 'package:nuts/controls/view.dart';
+import 'view.dart';
+import 'package:observable_ish/observable_ish.dart';
 
 // TODO:
 // 1) Sortable

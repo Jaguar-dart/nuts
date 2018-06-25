@@ -2,8 +2,8 @@ import 'package:nuts/nuts.dart';
 
 class Box extends Object with WidgetMixin implements Container {
   final String key;
-  final IfList<View> children;
-  final IfSet<String> classes;
+  final RxList<View> children;
+  final RxSet<String> classes;
   HAlign hAlign; // TODO convert to rx property
   VAlign vAlign; // TODO convert to rx property
   final onRemoved = StreamBackedEmitter<void>();
@@ -48,35 +48,35 @@ class Box extends Object with WidgetMixin implements Container {
     this.vAlign,
   })  : children = children is RxChildList
             ? children
-            : IfList<View>.union(children, child),
-        classes = classes is IfSet<String>
+            : RxList<View>.union(children, child),
+        classes = classes is RxSet<String>
             ? classes
-            : IfSet<String>.union(classes, class_) {
-    if (classes is IfSet) this.classes.addNonNull(class_);
+            : RxSet<String>.union(classes, class_) {
+    if (classes is RxSet) this.classes.addNonNull(class_);
     if (children is RxChildList) children.addNonNull(child);
-    widthProperty.setHowever(width);
-    minWidthProperty.setHowever(minWidth);
-    maxWidthProperty.setHowever(maxWidth);
-    heightProperty.setHowever(height);
-    minHeightProperty.setHowever(minHeight);
-    maxHeightProperty.setHowever(maxHeight);
-    marginLeftProperty.setHowever(marginLeft);
-    marginTopProperty.setHowever(marginTop);
-    marginRightProperty.setHowever(marginRight);
-    marginBottomProperty.setHowever(marginBottom);
-    paddingLeftProperty.setHowever(paddingLeft);
-    paddingTopProperty.setHowever(paddingTop);
-    paddingRightProperty.setHowever(paddingRight);
-    paddingBottomProperty.setHowever(paddingBottom);
-    leftProperty.setHowever(left);
-    topProperty.setHowever(top);
-    rightProperty.setHowever(right);
-    bottomProperty.setHowever(bottom);
-    boldProperty.setHowever(bold);
-    fontFamilyProperty.setHowever(fontFamily);
-    colorProperty.setHowever(color);
-    backgroundColorProperty.setHowever(backgroundColor);
-    backgroundImageProperty.setHowever(backgroundImage);
+    widthProperty.bindOrSet(width);
+    minWidthProperty.bindOrSet(minWidth);
+    maxWidthProperty.bindOrSet(maxWidth);
+    heightProperty.bindOrSet(height);
+    minHeightProperty.bindOrSet(minHeight);
+    maxHeightProperty.bindOrSet(maxHeight);
+    marginLeftProperty.bindOrSet(marginLeft);
+    marginTopProperty.bindOrSet(marginTop);
+    marginRightProperty.bindOrSet(marginRight);
+    marginBottomProperty.bindOrSet(marginBottom);
+    paddingLeftProperty.bindOrSet(paddingLeft);
+    paddingTopProperty.bindOrSet(paddingTop);
+    paddingRightProperty.bindOrSet(paddingRight);
+    paddingBottomProperty.bindOrSet(paddingBottom);
+    leftProperty.bindOrSet(left);
+    topProperty.bindOrSet(top);
+    rightProperty.bindOrSet(right);
+    bottomProperty.bindOrSet(bottom);
+    boldProperty.bindOrSet(bold);
+    fontFamilyProperty.bindOrSet(fontFamily);
+    colorProperty.bindOrSet(color);
+    backgroundColorProperty.bindOrSet(backgroundColor);
+    backgroundImageProperty.bindOrSet(backgroundImage);
     if (padding != null) this.padding = padding;
     if (margin != null) this.margin = margin;
     if (onClick != null) this.onClick.on(onClick);
@@ -108,8 +108,8 @@ class Box extends Object with WidgetMixin implements Container {
 
 class HBox extends Object with WidgetMixin implements Container {
   String key;
-  final IfList<View> children;
-  final IfSet<String> classes;
+  final RxList<View> children;
+  final RxSet<String> classes;
   HAlign hAlign; // TODO convert to rx property
   VAlign vAlign; // TODO convert to rx property
   final onRemoved = StreamBackedEmitter<void>();
@@ -154,35 +154,35 @@ class HBox extends Object with WidgetMixin implements Container {
     this.vAlign: VAlign.middle,
   })  : children = children is RxChildList
             ? children
-            : IfList<View>.union(children, child),
-        classes = classes is IfSet<String>
+            : RxList<View>.union(children, child),
+        classes = classes is RxSet<String>
             ? classes
-            : IfSet<String>.union(classes, class_) {
-    if (classes is IfSet) this.classes.addNonNull(class_);
+            : RxSet<String>.union(classes, class_) {
+    if (classes is RxSet) this.classes.addNonNull(class_);
     if (children is RxChildList) children.addNonNull(child);
-    widthProperty.setHowever(width);
-    minWidthProperty.setHowever(minWidth);
-    maxWidthProperty.setHowever(maxWidth);
-    heightProperty.setHowever(height);
-    minHeightProperty.setHowever(minHeight);
-    maxHeightProperty.setHowever(maxHeight);
-    marginLeftProperty.setHowever(marginLeft);
-    marginTopProperty.setHowever(marginTop);
-    marginRightProperty.setHowever(marginRight);
-    marginBottomProperty.setHowever(marginBottom);
-    paddingLeftProperty.setHowever(paddingLeft);
-    paddingTopProperty.setHowever(paddingTop);
-    paddingRightProperty.setHowever(paddingRight);
-    paddingBottomProperty.setHowever(paddingBottom);
-    leftProperty.setHowever(left);
-    topProperty.setHowever(top);
-    rightProperty.setHowever(right);
-    bottomProperty.setHowever(bottom);
-    boldProperty.setHowever(bold);
-    fontFamilyProperty.setHowever(fontFamily);
-    colorProperty.setHowever(color);
-    backgroundColorProperty.setHowever(backgroundColor);
-    backgroundImageProperty.setHowever(backgroundImage);
+    widthProperty.bindOrSet(width);
+    minWidthProperty.bindOrSet(minWidth);
+    maxWidthProperty.bindOrSet(maxWidth);
+    heightProperty.bindOrSet(height);
+    minHeightProperty.bindOrSet(minHeight);
+    maxHeightProperty.bindOrSet(maxHeight);
+    marginLeftProperty.bindOrSet(marginLeft);
+    marginTopProperty.bindOrSet(marginTop);
+    marginRightProperty.bindOrSet(marginRight);
+    marginBottomProperty.bindOrSet(marginBottom);
+    paddingLeftProperty.bindOrSet(paddingLeft);
+    paddingTopProperty.bindOrSet(paddingTop);
+    paddingRightProperty.bindOrSet(paddingRight);
+    paddingBottomProperty.bindOrSet(paddingBottom);
+    leftProperty.bindOrSet(left);
+    topProperty.bindOrSet(top);
+    rightProperty.bindOrSet(right);
+    bottomProperty.bindOrSet(bottom);
+    boldProperty.bindOrSet(bold);
+    fontFamilyProperty.bindOrSet(fontFamily);
+    colorProperty.bindOrSet(color);
+    backgroundColorProperty.bindOrSet(backgroundColor);
+    backgroundImageProperty.bindOrSet(backgroundImage);
     if (padding != null) this.padding = padding;
     if (margin != null) this.margin = margin;
     if (onClick != null) this.onClick.on(onClick);
@@ -214,8 +214,8 @@ class HBox extends Object with WidgetMixin implements Container {
 
 class Absolute extends Object with WidgetMixin implements Container {
   String key;
-  final IfList<View> children;
-  final IfSet<String> classes;
+  final RxList<View> children;
+  final RxSet<String> classes;
   final onRemoved = StreamBackedEmitter<void>();
   Absolute({
     View child,
@@ -256,35 +256,35 @@ class Absolute extends Object with WidgetMixin implements Container {
     /* Callback | ValueCallback */ onClick,
   })  : children = children is RxChildList
             ? children
-            : IfList<View>.union(children, child),
-        classes = classes is IfSet<String>
+            : RxList<View>.union(children, child),
+        classes = classes is RxSet<String>
             ? classes
-            : IfSet<String>.union(classes, class_) {
-    if (classes is IfSet) this.classes.addNonNull(class_);
+            : RxSet<String>.union(classes, class_) {
+    if (classes is RxSet) this.classes.addNonNull(class_);
     if (children is RxChildList) children.addNonNull(child);
-    widthProperty.setHowever(width);
-    minWidthProperty.setHowever(minWidth);
-    maxWidthProperty.setHowever(maxWidth);
-    heightProperty.setHowever(height);
-    minHeightProperty.setHowever(minHeight);
-    maxHeightProperty.setHowever(maxHeight);
-    marginLeftProperty.setHowever(marginLeft);
-    marginTopProperty.setHowever(marginTop);
-    marginRightProperty.setHowever(marginRight);
-    marginBottomProperty.setHowever(marginBottom);
-    paddingLeftProperty.setHowever(paddingLeft);
-    paddingTopProperty.setHowever(paddingTop);
-    paddingRightProperty.setHowever(paddingRight);
-    paddingBottomProperty.setHowever(paddingBottom);
-    leftProperty.setHowever(left);
-    topProperty.setHowever(top);
-    rightProperty.setHowever(right);
-    bottomProperty.setHowever(bottom);
-    boldProperty.setHowever(bold);
-    fontFamilyProperty.setHowever(fontFamily);
-    colorProperty.setHowever(color);
-    backgroundColorProperty.setHowever(backgroundColor);
-    backgroundImageProperty.setHowever(backgroundImage);
+    widthProperty.bindOrSet(width);
+    minWidthProperty.bindOrSet(minWidth);
+    maxWidthProperty.bindOrSet(maxWidth);
+    heightProperty.bindOrSet(height);
+    minHeightProperty.bindOrSet(minHeight);
+    maxHeightProperty.bindOrSet(maxHeight);
+    marginLeftProperty.bindOrSet(marginLeft);
+    marginTopProperty.bindOrSet(marginTop);
+    marginRightProperty.bindOrSet(marginRight);
+    marginBottomProperty.bindOrSet(marginBottom);
+    paddingLeftProperty.bindOrSet(paddingLeft);
+    paddingTopProperty.bindOrSet(paddingTop);
+    paddingRightProperty.bindOrSet(paddingRight);
+    paddingBottomProperty.bindOrSet(paddingBottom);
+    leftProperty.bindOrSet(left);
+    topProperty.bindOrSet(top);
+    rightProperty.bindOrSet(right);
+    bottomProperty.bindOrSet(bottom);
+    boldProperty.bindOrSet(bold);
+    fontFamilyProperty.bindOrSet(fontFamily);
+    colorProperty.bindOrSet(color);
+    backgroundColorProperty.bindOrSet(backgroundColor);
+    backgroundImageProperty.bindOrSet(backgroundImage);
     if (padding != null) this.padding = padding;
     if (margin != null) this.margin = margin;
     if (onClick != null) this.onClick.on(onClick);
@@ -316,8 +316,8 @@ class Absolute extends Object with WidgetMixin implements Container {
 
 class Relative extends Object with WidgetMixin implements Container {
   String key;
-  final IfList<View> children;
-  final IfSet<String> classes;
+  final RxList<View> children;
+  final RxSet<String> classes;
   final onRemoved = StreamBackedEmitter<void>();
   Relative({
     View child,
@@ -358,35 +358,35 @@ class Relative extends Object with WidgetMixin implements Container {
     /* Callback | ValueCallback */ onClick,
   })  : children = children is RxChildList
             ? children
-            : IfList<View>.union(children, child),
-        classes = classes is IfSet<String>
+            : RxList<View>.union(children, child),
+        classes = classes is RxSet<String>
             ? classes
-            : IfSet<String>.union(classes, class_) {
-    if (classes is IfSet) this.classes.addNonNull(class_);
+            : RxSet<String>.union(classes, class_) {
+    if (classes is RxSet) this.classes.addNonNull(class_);
     if (children is RxChildList) children.addNonNull(child);
-    widthProperty.setHowever(width);
-    minWidthProperty.setHowever(minWidth);
-    maxWidthProperty.setHowever(maxWidth);
-    heightProperty.setHowever(height);
-    minHeightProperty.setHowever(minHeight);
-    maxHeightProperty.setHowever(maxHeight);
-    marginLeftProperty.setHowever(marginLeft);
-    marginTopProperty.setHowever(marginTop);
-    marginRightProperty.setHowever(marginRight);
-    marginBottomProperty.setHowever(marginBottom);
-    paddingLeftProperty.setHowever(paddingLeft);
-    paddingTopProperty.setHowever(paddingTop);
-    paddingRightProperty.setHowever(paddingRight);
-    paddingBottomProperty.setHowever(paddingBottom);
-    leftProperty.setHowever(left);
-    topProperty.setHowever(top);
-    rightProperty.setHowever(right);
-    bottomProperty.setHowever(bottom);
-    boldProperty.setHowever(bold);
-    fontFamilyProperty.setHowever(fontFamily);
-    colorProperty.setHowever(color);
-    backgroundColorProperty.setHowever(backgroundColor);
-    backgroundImageProperty.setHowever(backgroundImage);
+    widthProperty.bindOrSet(width);
+    minWidthProperty.bindOrSet(minWidth);
+    maxWidthProperty.bindOrSet(maxWidth);
+    heightProperty.bindOrSet(height);
+    minHeightProperty.bindOrSet(minHeight);
+    maxHeightProperty.bindOrSet(maxHeight);
+    marginLeftProperty.bindOrSet(marginLeft);
+    marginTopProperty.bindOrSet(marginTop);
+    marginRightProperty.bindOrSet(marginRight);
+    marginBottomProperty.bindOrSet(marginBottom);
+    paddingLeftProperty.bindOrSet(paddingLeft);
+    paddingTopProperty.bindOrSet(paddingTop);
+    paddingRightProperty.bindOrSet(paddingRight);
+    paddingBottomProperty.bindOrSet(paddingBottom);
+    leftProperty.bindOrSet(left);
+    topProperty.bindOrSet(top);
+    rightProperty.bindOrSet(right);
+    bottomProperty.bindOrSet(bottom);
+    boldProperty.bindOrSet(bold);
+    fontFamilyProperty.bindOrSet(fontFamily);
+    colorProperty.bindOrSet(color);
+    backgroundColorProperty.bindOrSet(backgroundColor);
+    backgroundImageProperty.bindOrSet(backgroundImage);
     if (padding != null) this.padding = padding;
     if (margin != null) this.margin = margin;
     if (onClick != null) this.onClick.on(onClick);
@@ -418,8 +418,8 @@ class Relative extends Object with WidgetMixin implements Container {
 
 class Tin extends Object with WidgetMixin implements Container {
   String key;
-  final IfList<View> children;
-  final IfSet<String> classes;
+  final RxList<View> children;
+  final RxSet<String> classes;
   final onRemoved = StreamBackedEmitter<void>();
   Tin({
     View child,
@@ -460,35 +460,35 @@ class Tin extends Object with WidgetMixin implements Container {
     /* Callback | ValueCallback */ onClick,
   })  : children = children is RxChildList
             ? children
-            : IfList<View>.union(children, child),
-        classes = classes is IfSet<String>
+            : RxList<View>.union(children, child),
+        classes = classes is RxSet<String>
             ? classes
-            : IfSet<String>.union(classes, class_) {
-    if (classes is IfSet) this.classes.addNonNull(class_);
+            : RxSet<String>.union(classes, class_) {
+    if (classes is RxSet) this.classes.addNonNull(class_);
     if (children is RxChildList) children.addNonNull(child);
-    widthProperty.setHowever(width);
-    minWidthProperty.setHowever(minWidth);
-    maxWidthProperty.setHowever(maxWidth);
-    heightProperty.setHowever(height);
-    minHeightProperty.setHowever(minHeight);
-    maxHeightProperty.setHowever(maxHeight);
-    marginLeftProperty.setHowever(marginLeft);
-    marginTopProperty.setHowever(marginTop);
-    marginRightProperty.setHowever(marginRight);
-    marginBottomProperty.setHowever(marginBottom);
-    paddingLeftProperty.setHowever(paddingLeft);
-    paddingTopProperty.setHowever(paddingTop);
-    paddingRightProperty.setHowever(paddingRight);
-    paddingBottomProperty.setHowever(paddingBottom);
-    leftProperty.setHowever(left);
-    topProperty.setHowever(top);
-    rightProperty.setHowever(right);
-    bottomProperty.setHowever(bottom);
-    boldProperty.setHowever(bold);
-    fontFamilyProperty.setHowever(fontFamily);
-    colorProperty.setHowever(color);
-    backgroundColorProperty.setHowever(backgroundColor);
-    backgroundImageProperty.setHowever(backgroundImage);
+    widthProperty.bindOrSet(width);
+    minWidthProperty.bindOrSet(minWidth);
+    maxWidthProperty.bindOrSet(maxWidth);
+    heightProperty.bindOrSet(height);
+    minHeightProperty.bindOrSet(minHeight);
+    maxHeightProperty.bindOrSet(maxHeight);
+    marginLeftProperty.bindOrSet(marginLeft);
+    marginTopProperty.bindOrSet(marginTop);
+    marginRightProperty.bindOrSet(marginRight);
+    marginBottomProperty.bindOrSet(marginBottom);
+    paddingLeftProperty.bindOrSet(paddingLeft);
+    paddingTopProperty.bindOrSet(paddingTop);
+    paddingRightProperty.bindOrSet(paddingRight);
+    paddingBottomProperty.bindOrSet(paddingBottom);
+    leftProperty.bindOrSet(left);
+    topProperty.bindOrSet(top);
+    rightProperty.bindOrSet(right);
+    bottomProperty.bindOrSet(bottom);
+    boldProperty.bindOrSet(bold);
+    fontFamilyProperty.bindOrSet(fontFamily);
+    colorProperty.bindOrSet(color);
+    backgroundColorProperty.bindOrSet(backgroundColor);
+    backgroundImageProperty.bindOrSet(backgroundImage);
     if (padding != null) this.padding = padding;
     if (margin != null) this.margin = margin;
     if (onClick != null) this.onClick.on(onClick);

@@ -35,22 +35,22 @@ void handleWidget(final Element el, final View view) {
     var leftSub = view.leftProperty.values.listen((Distance left) {
       if (left != null) el.style.left = left.toString();
     });
-    view.leftProperty.getter = () => FixedDistance(el.offsetLeft);
+    view.leftProperty.getterProxy = () => FixedDistance(el.offsetLeft);
 
     var topSub = view.topProperty.values.listen((Distance top) {
       if (top != null) el.style.top = top.toString();
     });
-    view.topProperty.getter = () => FixedDistance(el.offsetTop);
+    view.topProperty.getterProxy = () => FixedDistance(el.offsetTop);
 
     var rightSub = view.rightProperty.values.listen((Distance right) {
       if (right != null) el.style.right = right.toString();
     });
-    // TODO view.rightProperty.getter = () => FixedDistance(el.offsetRight);
+    // TODO view.rightProperty.getterProxy = () => FixedDistance(el.offsetRight);
 
     var bottomSub = view.bottomProperty.values.listen((Distance bottom) {
       if (bottom != null) el.style.bottom = bottom.toString();
     });
-    // TODO view.bottomProperty.getter = () => FixedDistance(el.offsetBottom);
+    // TODO view.bottomProperty.getterProxy = () => FixedDistance(el.offsetBottom);
 
     var widthSub = view.widthProperty.values.listen((Distance width) {
       if (width is FlexSize) {
@@ -59,7 +59,7 @@ void handleWidget(final Element el, final View view) {
         el.style.width = width.toString();
       }
     });
-    view.widthProperty.getter = () => FixedDistance(el.offsetWidth);
+    view.widthProperty.getterProxy = () => FixedDistance(el.offsetWidth);
 
     var minWidthSub = view.minWidthProperty.values.listen((Distance width) {
       if (width != null) el.style.minWidth = width.toString();
@@ -76,7 +76,7 @@ void handleWidget(final Element el, final View view) {
         el.style.height = height.toString();
       }
     });
-    view.heightProperty.getter = () => FixedDistance(el.offsetHeight);
+    view.heightProperty.getterProxy = () => FixedDistance(el.offsetHeight);
 
     var minHeightSub = view.minHeightProperty.values.listen((Distance height) {
       if (height != null) el.style.minHeight = height.toString();
@@ -89,58 +89,58 @@ void handleWidget(final Element el, final View view) {
     var bgColorSub = view.backgroundColorProperty.values.listen((String value) {
       el.style.backgroundColor = value;
     });
-    view.backgroundColorProperty.getter = () => el.style.backgroundColor;
+    view.backgroundColorProperty.getterProxy = () => el.style.backgroundColor;
 
     var bgImageSub = view.backgroundImageProperty.values.listen((String value) {
       el.style.backgroundImage = value;
     });
-    view.backgroundImageProperty.getter = () => el.style.backgroundImage;
+    view.backgroundImageProperty.getterProxy = () => el.style.backgroundImage;
 
     var colorSub = view.colorProperty.values.listen((String value) {
       el.style.color = value;
     });
-    view.colorProperty.getter = () => el.style.color;
+    view.colorProperty.getterProxy = () => el.style.color;
 
     var paddingLeftSub = view.paddingLeftProperty.values.listen((Distance d) {
       if (d != null) el.style.paddingLeft = d.toString();
     });
-    // TODO padding Left getter
+    // TODO padding Left getterProxy
 
     var paddingTopSub = view.paddingTopProperty.values.listen((Distance d) {
       if (d != null) el.style.paddingTop = d.toString();
     });
-    // TODO padding Top getter
+    // TODO padding Top getterProxy
 
     var paddingRightSub = view.paddingRightProperty.values.listen((Distance d) {
       if (d != null) el.style.paddingRight = d.toString();
     });
-    // TODO padding Right getter
+    // TODO padding Right getterProxy
 
     var paddingBottomSub =
         view.paddingBottomProperty.values.listen((Distance d) {
       if (d != null) el.style.paddingBottom = d.toString();
     });
-    // TODO padding Bottom getter
+    // TODO padding Bottom getterProxy
 
     var marginLeftSub = view.marginLeftProperty.values.listen((Distance d) {
       if (d != null) el.style.marginLeft = d.toString();
     });
-    // TODO margin Left getter
+    // TODO margin Left getterProxy
 
     var marginTopSub = view.marginTopProperty.values.listen((Distance d) {
       if (d != null) el.style.marginTop = d.toString();
     });
-    // TODO margin Top getter
+    // TODO margin Top getterProxy
 
     var marginRightSub = view.marginRightProperty.values.listen((Distance d) {
       if (d != null) el.style.marginRight = d.toString();
     });
-    // TODO margin Right getter
+    // TODO margin Right getterProxy
 
     var marginBottomSub = view.marginBottomProperty.values.listen((Distance d) {
       if (d != null) el.style.marginBottom = d.toString();
     });
-    // TODO margin Bottom getter
+    // TODO margin Bottom getterProxy
 
     var boldSub = view.boldProperty.values.listen((bool v) {
       if (v != null) el.style.fontWeight = v ? 'bold' : 'normal';
@@ -224,14 +224,14 @@ Element multilineEditRenderer(final field, Renderer<Element> renderers) {
     if (field.placeholder != null)
       ret.placeholder = field.placeholder; // TODO rx
     field.valueProperty.listen((v) => ret.value = v ?? '');
-    field.valueProperty.getter = () => ret.value;
+    field.valueProperty.getterProxy = () => ret.value;
     ret.onBlur.listen((_) {
       print('here');
-      field.onCommit.emit(ValueCommitEvent<String>(field, ret.value));
+      field.onCommit.emitOne(ValueCommitEvent<String>(field, ret.value));
     });
     ret.onKeyPress.listen((KeyboardEvent e) {
       if (e.shiftKey && e.keyCode == KeyCode.ENTER) {
-        field.onCommit.emit(ValueCommitEvent<String>(field, ret.value));
+        field.onCommit.emitOne(ValueCommitEvent<String>(field, ret.value));
         e.preventDefault();
       }
     });
@@ -259,13 +259,13 @@ Element textEditRenderer(final field, Renderer<Element> renderers) {
     if (field.placeholder != null)
       ret.placeholder = field.placeholder; // TODO rx
     field.valueProperty.listen((v) => ret.value = v ?? '');
-    field.valueProperty.getter = () => ret.value;
+    field.valueProperty.getterProxy = () => ret.value;
     ret.onBlur.listen((_) {
-      field.onCommit.emit(ValueCommitEvent<String>(field, ret.value));
+      field.onCommit.emitOne(ValueCommitEvent<String>(field, ret.value));
     });
     ret.onKeyPress.listen((KeyboardEvent e) {
       if (e.keyCode == KeyCode.ENTER) {
-        field.onCommit.emit(ValueCommitEvent<String>(field, ret.value));
+        field.onCommit.emitOne(ValueCommitEvent<String>(field, ret.value));
       }
     });
     if (field.shouldEscape) {
@@ -292,13 +292,13 @@ Element intEditRenderer(final field, Renderer<Element> renderers) {
     if (field.placeholder != null)
       ret.placeholder = field.placeholder; // TODO rx
     field.valueProperty.listen((v) => ret.value = v?.toString() ?? '');
-    field.valueProperty.getter = () => int.tryParse(ret.value) ?? null;
+    field.valueProperty.getterProxy = () => int.tryParse(ret.value) ?? null;
     ret.onBlur.listen((_) {
-      field.onCommit.emit(ValueCommitEvent<int>(field, field.value));
+      field.onCommit.emitOne(ValueCommitEvent<int>(field, field.value));
     });
     ret.onKeyPress.listen((KeyboardEvent e) {
       if (e.keyCode == KeyCode.ENTER) {
-        field.onCommit.emit(ValueCommitEvent<int>(field, field.value));
+        field.onCommit.emitOne(ValueCommitEvent<int>(field, field.value));
       }
     });
     if (field.shouldEscape) {
@@ -337,8 +337,10 @@ Element textFieldRenderer(final field, _) {
     var ret = new DivElement()
       ..classes.add('textfield')
       ..text = field.text;
-    field.textProperty.values.listen((v) => ret.text = v ?? '');
-    field.textProperty.getter = () => ret.text;
+    field.textProperty.values.listen((v) {
+      ret.text = v ?? '';
+    });
+    field.textProperty.getterProxy = () => ret.text;
     handleWidget(ret, field);
     return ret;
   }
@@ -348,9 +350,10 @@ Element textFieldRenderer(final field, _) {
 Element intFieldRenderer(final field, _) {
   if (field is IntField) {
     var ret = new DivElement()
-      ..classes.addAll(['textfield', 'textfield-int'])
-      ..text = field.text.toString();
-    // TODO text
+      ..classes.add('textfield')
+      ..text = field.text?.toString() ?? '';
+    field.textProperty.values.listen((v) => ret.text = v?.toString() ?? '');
+    field.textProperty.getterProxy = () => int.tryParse(ret.text);
     handleWidget(ret, field);
     return ret;
   }

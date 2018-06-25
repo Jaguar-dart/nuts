@@ -1,7 +1,7 @@
 import 'package:nuts/nuts.dart';
 
 abstract class EditView<T> implements View {
-  BackedReactive<T> get valueProperty;
+  ProxyValue<T> get valueProperty;
   T value;
   void setCastValue(v);
   StreamBackedEmitter<ValueCommitEvent<T>> get onCommit;
@@ -11,7 +11,7 @@ abstract class EditWidget<T> implements EditView<T>, Widget {}
 
 class TextEdit extends Object with WidgetMixin implements EditWidget<String> {
   String key;
-  final IfSet<String> classes;
+  final RxSet<String> classes;
   String placeholder;
   final onCommit = StreamBackedEmitter<ValueCommitEvent<String>>();
   final bool shouldEscape;
@@ -32,22 +32,22 @@ class TextEdit extends Object with WidgetMixin implements EditWidget<String> {
     String class_,
     Iterable<String> classes,
     /* Callback | ValueCallback<String> */ onCommit,
-  }) : classes = classes is IfSet<String>
+  }) : classes = classes is RxSet<String>
             ? classes
-            : IfSet<String>.union(classes, class_) {
-    if (classes is IfSet) this.classes.addNonNull(class_);
-    valueProperty.setHowever(value);
-    widthProperty.setHowever(width);
-    minWidthProperty.setHowever(minWidth);
-    maxWidthProperty.setHowever(maxWidth);
-    boldProperty.setHowever(bold);
-    fontFamilyProperty.setHowever(fontFamily);
-    colorProperty.setHowever(color);
-    backgroundColorProperty.setHowever(backgroundColor);
+            : RxSet<String>.union(classes, class_) {
+    if (classes is RxSet) this.classes.addNonNull(class_);
+    valueProperty.bindOrSet(value);
+    widthProperty.bindOrSet(width);
+    minWidthProperty.bindOrSet(minWidth);
+    maxWidthProperty.bindOrSet(maxWidth);
+    boldProperty.bindOrSet(bold);
+    fontFamilyProperty.bindOrSet(fontFamily);
+    colorProperty.bindOrSet(color);
+    backgroundColorProperty.bindOrSet(backgroundColor);
     if (onCommit != null) this.onCommit.on(onCommit);
   }
 
-  final valueProperty = BackedReactive<String>();
+  final valueProperty = ProxyValue<String>();
   String get value => valueProperty.value;
   set value(String value) => valueProperty.value = value;
   void setCastValue(v) => valueProperty.value = value;
@@ -55,7 +55,7 @@ class TextEdit extends Object with WidgetMixin implements EditWidget<String> {
 
 class IntEdit extends Object with WidgetMixin implements EditWidget<int> {
   String key;
-  final IfSet<String> classes;
+  final RxSet<String> classes;
   String placeholder;
   final onCommit = StreamBackedEmitter<ValueCommitEvent<int>>();
   final bool shouldEscape;
@@ -70,18 +70,18 @@ class IntEdit extends Object with WidgetMixin implements EditWidget<int> {
     String class_,
     Iterable<String> classes,
     /* Callback | ValueCallback<int> */ onCommit,
-  }) : classes = classes is IfSet<String>
+  }) : classes = classes is RxSet<String>
             ? classes
-            : IfSet<String>.union(classes, class_) {
-    if (classes is IfSet) this.classes.addNonNull(class_);
-    valueProperty.setHowever(value);
-    widthProperty.setHowever(width);
-    minWidthProperty.setHowever(minWidth);
-    maxWidthProperty.setHowever(maxWidth);
+            : RxSet<String>.union(classes, class_) {
+    if (classes is RxSet) this.classes.addNonNull(class_);
+    valueProperty.bindOrSet(value);
+    widthProperty.bindOrSet(width);
+    minWidthProperty.bindOrSet(minWidth);
+    maxWidthProperty.bindOrSet(maxWidth);
     if (onCommit != null) this.onCommit.on(onCommit);
   }
 
-  final valueProperty = BackedReactive<int>();
+  final valueProperty = ProxyValue<int>();
   int get value => valueProperty.value;
   set value(int value) => valueProperty.value = value;
   void setCastValue(v) => valueProperty.value = value;
@@ -91,7 +91,7 @@ class LabeledEdit<T> extends Object
     with WidgetMixin
     implements EditView<T>, HLabeledView, Widget {
   String key;
-  final IfSet<String> classes;
+  final RxSet<String> classes;
   final TextField labelField;
   final EditView<T> labelled;
   final VAlign vAlign;
@@ -106,16 +106,16 @@ class LabeledEdit<T> extends Object
     Iterable<String> classes,
     /* Callback | ValueCallback<T> */ onCommit,
   })  : labelField = labelField ?? TextField(text: label),
-        classes = classes is IfSet<String>
+        classes = classes is RxSet<String>
             ? classes
-            : IfSet<String>.union(classes, class_) {
-    if (classes is IfSet) this.classes.addNonNull(class_);
+            : RxSet<String>.union(classes, class_) {
+    if (classes is RxSet) this.classes.addNonNull(class_);
     this.height = height;
     this.labelField.classes.add('label');
     if (onCommit != null) this.onCommit.on(onCommit);
   }
 
-  BackedReactive<T> get valueProperty => labelled.valueProperty;
+  ProxyValue<T> get valueProperty => labelled.valueProperty;
   T get value => labelled.value;
   set value(T value) => valueProperty.value = value;
   void setCastValue(v) => valueProperty.value = value;
@@ -127,8 +127,8 @@ class Form extends Object
     implements EditView<Map<String, dynamic>>, Widget {
   @override
   String key;
-  final IfSet<String> classes;
-  final IfList<View> children;
+  final RxSet<String> classes;
+  final RxList<View> children;
   Distance hLabelWidth; // TODO
   Distance hLabelMinWidth;
   Distance hLabelMaxWidth;
@@ -143,15 +143,15 @@ class Form extends Object
     String class_,
     Iterable<String> classes,
     /* Callback | ValueCallback<Map<String, dynamic>> */ onCommit,
-  })  : children = IfList<View>.union(children, child),
+  })  : children = RxList<View>.union(children, child),
         hLabelMinWidth = hLabelMinWidth ?? FixedDistance(100),
-        classes = classes is IfSet<String>
+        classes = classes is RxSet<String>
             ? classes
-            : IfSet<String>.union(classes, class_) {
-    if (classes is IfSet) this.classes.addNonNull(class_);
+            : RxSet<String>.union(classes, class_) {
+    if (classes is RxSet) this.classes.addNonNull(class_);
 
     valueProperty.values.listen(_normalSetter);
-    valueProperty.getter = _normalGetter;
+    valueProperty.getterProxy = _normalGetter;
 
     for (View v in this.children) {
       if (v is HLabeledView) {
@@ -167,7 +167,7 @@ class Form extends Object
     // TODO emit commits
   }
 
-  final valueProperty = BackedReactive<Map<String, dynamic>>();
+  final valueProperty = ProxyValue<Map<String, dynamic>>();
   Map<String, dynamic> get value => valueProperty.value;
   set value(Map<String, dynamic> value) => valueProperty.value = value;
   void setCastValue(v) => valueProperty.value = value;
@@ -200,7 +200,7 @@ class MultilineEdit extends Object
     with WidgetMixin
     implements EditWidget<String> {
   String key;
-  final IfSet<String> classes;
+  final RxSet<String> classes;
   String placeholder;
   final onCommit = StreamBackedEmitter<ValueCommitEvent<String>>();
   final bool shouldEscape;
@@ -221,22 +221,22 @@ class MultilineEdit extends Object
     String class_,
     Iterable<String> classes,
     /* Callback | ValueCallback<String> */ onCommit,
-  }) : classes = classes is IfSet<String>
+  }) : classes = classes is RxSet<String>
             ? classes
-            : IfSet<String>.union(classes, class_) {
-    if (classes is IfSet) this.classes.addNonNull(class_);
-    valueProperty.setHowever(value);
-    widthProperty.setHowever(width);
-    minWidthProperty.setHowever(minWidth);
-    maxWidthProperty.setHowever(maxWidth);
-    boldProperty.setHowever(bold);
-    fontFamilyProperty.setHowever(fontFamily);
-    colorProperty.setHowever(color);
-    backgroundColorProperty.setHowever(backgroundColor);
+            : RxSet<String>.union(classes, class_) {
+    if (classes is RxSet) this.classes.addNonNull(class_);
+    valueProperty.bindOrSet(value);
+    widthProperty.bindOrSet(width);
+    minWidthProperty.bindOrSet(minWidth);
+    maxWidthProperty.bindOrSet(maxWidth);
+    boldProperty.bindOrSet(bold);
+    fontFamilyProperty.bindOrSet(fontFamily);
+    colorProperty.bindOrSet(color);
+    backgroundColorProperty.bindOrSet(backgroundColor);
     if (onCommit != null) this.onCommit.on(onCommit);
   }
 
-  final valueProperty = BackedReactive<String>();
+  final valueProperty = ProxyValue<String>();
   String get value => valueProperty.value;
   set value(String value) => valueProperty.value = value;
   void setCastValue(v) => valueProperty.value = value;

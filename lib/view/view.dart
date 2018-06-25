@@ -8,18 +8,16 @@ export 'measure.dart';
 export 'table.dart';
 export 'text.dart';
 
-export 'package:nuts/collection/collection.dart';
-
 abstract class View {
   String get key;
 }
 
 abstract class RemoveProcessor implements View {
-  EmitableEmitter<void> get onRemoved;
+  Emitter<void> get onRemoved;
 }
 
 void emitRemoved(View view) {
-  if (view is RemoveProcessor) view.onRemoved.emit(null);
+  if (view is RemoveProcessor) view.onRemoved.emitOne(null);
   if (view is Component) emitRemoved(view.view);
 }
 
@@ -37,7 +35,7 @@ class VariableView<T> implements View, RemoveProcessor {
   final T initial;
   final onRemoved = StreamBackedEmitter<void>();
   VariableView(this.initial, this.rebuildOn, this.viewMaker, {this.key});
-  VariableView.rx(Reactive<T> rx, this.viewMaker, {this.key})
+  VariableView.rx(RxValue<T> rx, this.viewMaker, {this.key})
       : initial = rx.value,
         rebuildOn = rx.values;
   View makeView(dynamic /* T */ v) => viewMaker(v as T);
@@ -53,52 +51,52 @@ enum VAlign { top, middle, bottom }
 enum HAlign { left, center, right }
 
 abstract class Widget implements View {
-  IfSet<String> get classes;
-  BackedReactive<Distance> get widthProperty;
+  RxSet<String> get classes;
+  ProxyValue<Distance> get widthProperty;
   Distance width;
-  BackedReactive<Distance> get minWidthProperty;
+  ProxyValue<Distance> get minWidthProperty;
   Distance minWidth;
-  BackedReactive<Distance> get maxWidthProperty;
+  ProxyValue<Distance> get maxWidthProperty;
   Distance maxWidth;
-  BackedReactive<Distance> get heightProperty;
+  ProxyValue<Distance> get heightProperty;
   Distance height;
-  BackedReactive<Distance> get minHeightProperty;
+  ProxyValue<Distance> get minHeightProperty;
   Distance minHeight;
-  BackedReactive<Distance> get maxHeightProperty;
+  ProxyValue<Distance> get maxHeightProperty;
   Distance maxHeight;
-  BackedReactive<Distance> get marginLeftProperty;
+  ProxyValue<Distance> get marginLeftProperty;
   Distance marginLeft;
-  BackedReactive<Distance> get marginTopProperty;
+  ProxyValue<Distance> get marginTopProperty;
   Distance marginTop;
-  BackedReactive<Distance> get marginRightProperty;
+  ProxyValue<Distance> get marginRightProperty;
   Distance marginRight;
-  BackedReactive<Distance> get marginBottomProperty;
+  ProxyValue<Distance> get marginBottomProperty;
   Distance marginBottom;
-  BackedReactive<Distance> get paddingLeftProperty;
+  ProxyValue<Distance> get paddingLeftProperty;
   Distance paddingLeft;
-  BackedReactive<Distance> get paddingTopProperty;
+  ProxyValue<Distance> get paddingTopProperty;
   Distance paddingTop;
-  BackedReactive<Distance> get paddingRightProperty;
+  ProxyValue<Distance> get paddingRightProperty;
   Distance paddingRight;
-  BackedReactive<Distance> get paddingBottomProperty;
+  ProxyValue<Distance> get paddingBottomProperty;
   Distance paddingBottom;
-  BackedReactive<Distance> get leftProperty;
+  ProxyValue<Distance> get leftProperty;
   Distance left;
-  BackedReactive<Distance> get topProperty;
+  ProxyValue<Distance> get topProperty;
   Distance top;
-  BackedReactive<Distance> get rightProperty;
+  ProxyValue<Distance> get rightProperty;
   Distance right;
-  BackedReactive<Distance> get bottomProperty;
+  ProxyValue<Distance> get bottomProperty;
   Distance bottom;
-  BackedReactive<bool> get boldProperty;
+  ProxyValue<bool> get boldProperty;
   bool bold;
-  BackedReactive<String> get fontFamilyProperty;
+  ProxyValue<String> get fontFamilyProperty;
   String fontFamily;
-  BackedReactive<String> get colorProperty;
+  ProxyValue<String> get colorProperty;
   String color;
-  BackedReactive<String> get backgroundColorProperty;
+  ProxyValue<String> get backgroundColorProperty;
   String backgroundColor;
-  BackedReactive<String> get backgroundImageProperty;
+  ProxyValue<String> get backgroundImageProperty;
   String backgroundImage;
 
   // TODO padding property
@@ -115,99 +113,99 @@ abstract class Widget implements View {
 abstract class Container implements Widget, RemoveProcessor {
   T getByKey<T extends View>(String key);
   T deepGetByKey<T extends View>(Iterable<String> keys);
-  IfList<View> get children;
+  RxList<View> get children;
 }
 
 abstract class WidgetMixin implements Widget {
-  final widthProperty = BackedReactive<Distance>();
+  final widthProperty = ProxyValue<Distance>();
   Distance get width => widthProperty.value;
   set width(Distance value) => widthProperty.value = value;
 
-  final minWidthProperty = BackedReactive<Distance>();
+  final minWidthProperty = ProxyValue<Distance>();
   Distance get minWidth => minWidthProperty.value;
   set minWidth(Distance value) => minWidthProperty.value = value;
 
-  final maxWidthProperty = BackedReactive<Distance>();
+  final maxWidthProperty = ProxyValue<Distance>();
   Distance get maxWidth => maxWidthProperty.value;
   set maxWidth(Distance value) => maxWidthProperty.value = value;
 
-  final heightProperty = BackedReactive<Distance>();
+  final heightProperty = ProxyValue<Distance>();
   Distance get height => heightProperty.value;
   set height(Distance value) => heightProperty.value = value;
 
-  final minHeightProperty = BackedReactive<Distance>();
+  final minHeightProperty = ProxyValue<Distance>();
   Distance get minHeight => minHeightProperty.value;
   set minHeight(Distance value) => minHeightProperty.value = value;
 
-  final maxHeightProperty = BackedReactive<Distance>();
+  final maxHeightProperty = ProxyValue<Distance>();
   Distance get maxHeight => maxHeightProperty.value;
   set maxHeight(Distance value) => maxHeightProperty.value = value;
 
-  final marginLeftProperty = BackedReactive<Distance>();
+  final marginLeftProperty = ProxyValue<Distance>();
   Distance get marginLeft => marginLeftProperty.value;
   set marginLeft(Distance value) => marginLeftProperty.value = value;
 
-  final marginTopProperty = BackedReactive<Distance>();
+  final marginTopProperty = ProxyValue<Distance>();
   Distance get marginTop => marginTopProperty.value;
   set marginTop(Distance value) => marginTopProperty.value = value;
 
-  final marginRightProperty = BackedReactive<Distance>();
+  final marginRightProperty = ProxyValue<Distance>();
   Distance get marginRight => marginRightProperty.value;
   set marginRight(Distance value) => marginRightProperty.value = value;
 
-  final marginBottomProperty = BackedReactive<Distance>();
+  final marginBottomProperty = ProxyValue<Distance>();
   Distance get marginBottom => marginBottomProperty.value;
   set marginBottom(Distance value) => marginBottomProperty.value = value;
 
-  final paddingLeftProperty = BackedReactive<Distance>();
+  final paddingLeftProperty = ProxyValue<Distance>();
   Distance get paddingLeft => paddingLeftProperty.value;
   set paddingLeft(Distance value) => paddingLeftProperty.value = value;
 
-  final paddingTopProperty = BackedReactive<Distance>();
+  final paddingTopProperty = ProxyValue<Distance>();
   Distance get paddingTop => paddingTopProperty.value;
   set paddingTop(Distance value) => paddingTopProperty.value = value;
 
-  final paddingRightProperty = BackedReactive<Distance>();
+  final paddingRightProperty = ProxyValue<Distance>();
   Distance get paddingRight => paddingRightProperty.value;
   set paddingRight(Distance value) => paddingRightProperty.value = value;
 
-  final paddingBottomProperty = BackedReactive<Distance>();
+  final paddingBottomProperty = ProxyValue<Distance>();
   Distance get paddingBottom => paddingBottomProperty.value;
   set paddingBottom(Distance value) => paddingBottomProperty.value = value;
 
-  final leftProperty = BackedReactive<Distance>();
+  final leftProperty = ProxyValue<Distance>();
   Distance get left => leftProperty.value;
   set left(Distance value) => leftProperty.value = value;
 
-  final topProperty = BackedReactive<Distance>();
+  final topProperty = ProxyValue<Distance>();
   Distance get top => topProperty.value;
   set top(Distance value) => topProperty.value = value;
 
-  final rightProperty = BackedReactive<Distance>();
+  final rightProperty = ProxyValue<Distance>();
   Distance get right => rightProperty.value;
   set right(Distance value) => rightProperty.value = value;
 
-  final bottomProperty = BackedReactive<Distance>();
+  final bottomProperty = ProxyValue<Distance>();
   Distance get bottom => bottomProperty.value;
   set bottom(Distance value) => bottomProperty.value = value;
 
-  final boldProperty = BackedReactive<bool>();
+  final boldProperty = ProxyValue<bool>();
   bool get bold => boldProperty.value;
   set bold(bool value) => boldProperty.value = value;
 
-  final fontFamilyProperty = BackedReactive<String>();
+  final fontFamilyProperty = ProxyValue<String>();
   String get fontFamily => fontFamilyProperty.value;
   set fontFamily(String value) => fontFamilyProperty.value = value;
 
-  final colorProperty = BackedReactive<String>();
+  final colorProperty = ProxyValue<String>();
   String get color => colorProperty.value;
   set color(String value) => colorProperty.value = value;
 
-  final backgroundColorProperty = BackedReactive<String>();
+  final backgroundColorProperty = ProxyValue<String>();
   String get backgroundColor => backgroundColorProperty.value;
   set backgroundColor(String value) => backgroundColorProperty.value = value;
 
-  final backgroundImageProperty = BackedReactive<String>();
+  final backgroundImageProperty = ProxyValue<String>();
   String get backgroundImage => backgroundImageProperty.value;
   set backgroundImage(String value) => backgroundImageProperty.value = value;
 
@@ -241,4 +239,9 @@ abstract class WidgetMixin implements Widget {
   final onMouseDown = StreamBackedEmitter<ClickEvent>();
   final onMouseMove = StreamBackedEmitter<ClickEvent>();
   final onMouseUp = StreamBackedEmitter<ClickEvent>();
+}
+
+class RxChildList<S> extends BoundList<S, View> {
+  RxChildList(RxList<S> binding, ChildrenListComposer<S, View> composer)
+      : super(binding, composer);
 }
