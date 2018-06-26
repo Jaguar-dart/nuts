@@ -92,6 +92,8 @@ abstract class Widget implements View {
   bool bold;
   ProxyValue<String> get fontFamilyProperty;
   String fontFamily;
+  ProxyValue<Distance> get fontSizeProperty;
+  Distance fontSize;
   ProxyValue<String> get colorProperty;
   String color;
   ProxyValue<String> get backgroundColorProperty;
@@ -196,6 +198,10 @@ abstract class WidgetMixin implements Widget {
   final fontFamilyProperty = ProxyValue<String>();
   String get fontFamily => fontFamilyProperty.value;
   set fontFamily(String value) => fontFamilyProperty.value = value;
+
+  final fontSizeProperty = ProxyValue<Distance>();
+  Distance get fontSize => fontSizeProperty.value;
+  set fontSize(Distance value) => fontSizeProperty.value = value;
 
   final colorProperty = ProxyValue<String>();
   String get color => colorProperty.value;

@@ -31,6 +31,7 @@ class TextField extends Object with WidgetMixin implements Widget {
     /* bool | Stream<bool> | Reactive<bool> */ bold,
 
     /* String | Stream<String> | Reactive<String> */ fontFamily,
+    /* Distance | Stream<Distance> | Reactive<Distance> */ fontSize,
     /* String | Stream<String> | Reactive<Stream> */ color,
     /* String | Stream<String> | Reactive<Stream> */ backgroundColor,
     String class_,
@@ -61,6 +62,7 @@ class TextField extends Object with WidgetMixin implements Widget {
     bottomProperty.bindOrSet(bottom);
     boldProperty.bindOrSet(bold);
     fontFamilyProperty.bindOrSet(fontFamily);
+    fontSizeProperty.bindOrSet(fontSize);
     colorProperty.bindOrSet(color);
     backgroundColorProperty.bindOrSet(backgroundColor);
 
@@ -218,17 +220,13 @@ class Button extends Object with WidgetMixin implements Widget {
 
   final String tip;
 
-  final String color;
-
-  final int fontSize;
-
   Button(
       {this.icon,
       this.text,
       /* Callback | ValueCallback */ onClick,
       this.tip,
-      this.color: blue,
-      this.fontSize,
+      /* String | Stream<String> | Reactive<String> */ color,
+      /* Distance | Stream<Distance> | Reactive<Distance> */ fontSize,
       this.key,
       String class_,
       Iterable<String> classes})
@@ -236,6 +234,9 @@ class Button extends Object with WidgetMixin implements Widget {
             ? classes
             : RxSet<String>.union(classes, class_) {
     if (classes is RxSet) this.classes.addNonNull(class_);
+
+    fontSizeProperty.bindOrSet(fontSize);
+    colorProperty.bindOrSet(color);
 
     if (onClick != null) this.onClick.on(onClick);
   }

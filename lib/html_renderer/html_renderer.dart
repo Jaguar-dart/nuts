@@ -152,6 +152,11 @@ void handleWidget(final Element el, final View view) {
     });
     // TODO fontFamily property
 
+    var fontSizeSub = view.fontSizeProperty.values.listen((Distance v) {
+      if (v != null) el.style.fontSize = v.toString();
+    });
+    // TODO fontFamily property
+
     view.onClick.emitStream(
         el.onClick.map((e) => ClickEvent(view, e.offset, e.buttons)));
     view.onMouseDown.emitStream(
