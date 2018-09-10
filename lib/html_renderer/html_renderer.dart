@@ -32,54 +32,69 @@ void handleWidget(final Element el, final View view) {
       }
     });
 
-    var leftSub = view.leftProperty.values.listen((Distance left) {
-      if (left != null) el.style.left = left.toString();
+    var leftSub = view.leftProperty.values.listen((dynamic left) {
+      if (left is Distance)
+        el.style.left = left.toString();
+      else if (left is num) el.style.left = left.toString() + 'px';
     });
-    view.leftProperty.getterProxy = () => FixedDistance(el.offsetLeft);
+    // TODO view.leftProperty.getterProxy = () => el.offsetLeft;
 
-    var topSub = view.topProperty.values.listen((Distance top) {
-      if (top != null) el.style.top = top.toString();
+    var topSub = view.topProperty.values.listen((dynamic top) {
+      if (top is Distance)
+        el.style.top = top.toString();
+      else if (top is num) el.style.top = top.toString() + 'px';
     });
-    view.topProperty.getterProxy = () => FixedDistance(el.offsetTop);
+    // TODO view.topProperty.getterProxy = () => FixedDistance(el.offsetTop);
 
-    var rightSub = view.rightProperty.values.listen((Distance right) {
-      if (right != null) el.style.right = right.toString();
+    var rightSub = view.rightProperty.values.listen((dynamic right) {
+      if (right is Distance)
+        el.style.right = right.toString();
+      else if (right is num) el.style.right = right.toString() + 'px';
     });
     // TODO view.rightProperty.getterProxy = () => FixedDistance(el.offsetRight);
 
-    var bottomSub = view.bottomProperty.values.listen((Distance bottom) {
-      if (bottom != null) el.style.bottom = bottom.toString();
+    var bottomSub = view.bottomProperty.values.listen((dynamic bottom) {
+      if (bottom is Distance)
+        el.style.bottom = bottom.toString();
+      else if (bottom is num) el.style.bottom = bottom.toString() + 'px';
     });
     // TODO view.bottomProperty.getterProxy = () => FixedDistance(el.offsetBottom);
 
-    var widthSub = view.widthProperty.values.listen((Distance width) {
+    var widthSub = view.widthProperty.values.listen((dynamic width) {
       if (width is FlexSize) {
         el.style.flex = width.toString();
-      } else if (width != null) {
+      } else if (width is Distance) {
         el.style.width = width.toString();
+      } else if (width is num) {
+        el.style.width = width.toString() + 'px';
       }
     });
     view.widthProperty.getterProxy = () => FixedDistance(el.offsetWidth);
 
-    var minWidthSub = view.minWidthProperty.values.listen((Distance width) {
-      if (width != null) el.style.minWidth = width.toString();
+    var minWidthSub = view.minWidthProperty.values.listen((dynamic width) {
+      if (width is Distance)
+        el.style.minWidth = width.toString();
+      else if (width is num) el.style.minWidth = width.toString() + 'px';
     });
 
     var maxWidthSub = view.maxWidthProperty.values.listen((Distance width) {
       if (width != null) el.style.maxWidth = width.toString();
     });
 
-    var heightSub = view.heightProperty.values.listen((Distance height) {
+    var heightSub = view.heightProperty.values.listen((dynamic height) {
       if (height is FlexSize) {
         el.style.flex = height.toString();
-      } else if (height != null) {
+      } else if (height is Distance) {
         el.style.height = height.toString();
+      } else if (height is num) {
+        el.style.height = height.toString() + 'px';
       }
     });
     view.heightProperty.getterProxy = () => FixedDistance(el.offsetHeight);
 
-    var minHeightSub = view.minHeightProperty.values.listen((Distance height) {
-      if (height != null) el.style.minHeight = height.toString();
+    var minHeightSub = view.minHeightProperty.values.listen((dynamic height) {
+      if (height is Distance) el.style.minHeight = height.toString();
+      else if(height is num) el.style.minHeight = height.toString() + 'px';
     });
 
     var maxHeightSub = view.maxHeightProperty.values.listen((Distance height) {
@@ -157,17 +172,24 @@ void handleWidget(final Element el, final View view) {
     });
     // TODO fontFamily property
 
-    view.onClick.emitStream(
-        el.onClick.map((e) => ClickEvent(view, e.offset, e.buttons)));
-    view.onMouseDown.emitStream(
-        el.onMouseDown.map((e) => ClickEvent(view, e.offset, e.buttons)));
-    view.onMouseMove.emitStream(
-        el.onMouseMove.map((e) => ClickEvent(view, e.offset, e.buttons)));
-    view.onMouseUp.emitStream(
-        el.onMouseUp.map((e) => ClickEvent(view, e.offset, e.buttons)));
+    view.onClick.emitStream(el.onClick.map((e) => ClickEvent(view, e)));
+    view.onMouseDown.emitStream(el.onMouseDown.map((e) => ClickEvent(view, e)));
+    view.onMouseMove.emitStream(el.onMouseMove.map((e) => ClickEvent(view, e)));
+    view.onMouseUp.emitStream(el.onMouseUp.map((e) => ClickEvent(view, e)));
 
     if (view is RemoveProcessor) {
       (view as RemoveProcessor).onRemoved.listen((_) {
+        leftSub.cancel();
+        topSub.cancel();
+        rightSub.cancel();
+        bottomSub.cancel();
+
+        widthSub.cancel();
+        heightSub.cancel();
+
+        maxWidthSub.cancel();
+        minWidthSub.cancel();
+
         // TODO
         classesSub.cancel();
         leftSub.cancel();

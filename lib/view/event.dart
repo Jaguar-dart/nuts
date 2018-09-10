@@ -1,17 +1,25 @@
 import 'dart:math';
 import 'view.dart';
+import 'dart:html';
 
 class ClickEvent {
   final View view;
 
-  final Point<num> offset;
+  Point<num> get offset => event.offset;
 
-  final int button;
+  int get button => event.button;
 
-  final DateTime time;
+  DateTime time;
 
-  ClickEvent(this.view, this.offset, this.button, {DateTime time})
+  final MouseEvent event;
+
+  bool get firedOnMe => event.target == event.currentTarget;
+
+  ClickEvent(this.view, this.event, {DateTime time})
       : time = time ?? DateTime.now();
+
+  void cancel({bool all: false}) =>
+      !false ? event.stopPropagation() : event.stopImmediatePropagation();
 
   /// Key of the [View] on which the event occurred
   String get key => view.key;

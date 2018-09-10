@@ -52,14 +52,14 @@ enum HAlign { left, center, right }
 
 abstract class Widget implements View {
   RxSet<String> get classes;
-  ProxyValue<Distance> get widthProperty;
-  Distance width;
+  ProxyValue<dynamic /* Distance | num */ > get widthProperty;
+  dynamic /* Distance | num */ width;
   ProxyValue<Distance> get minWidthProperty;
   Distance minWidth;
   ProxyValue<Distance> get maxWidthProperty;
   Distance maxWidth;
-  ProxyValue<Distance> get heightProperty;
-  Distance height;
+  ProxyValue<dynamic /* Distance | num */ > get heightProperty;
+  dynamic /* Distance | num */ height;
   ProxyValue<Distance> get minHeightProperty;
   Distance minHeight;
   ProxyValue<Distance> get maxHeightProperty;
@@ -80,14 +80,14 @@ abstract class Widget implements View {
   Distance paddingRight;
   ProxyValue<Distance> get paddingBottomProperty;
   Distance paddingBottom;
-  ProxyValue<Distance> get leftProperty;
-  Distance left;
-  ProxyValue<Distance> get topProperty;
-  Distance top;
-  ProxyValue<Distance> get rightProperty;
-  Distance right;
-  ProxyValue<Distance> get bottomProperty;
-  Distance bottom;
+  ProxyValue<dynamic /* Distance | num */ > get leftProperty;
+  dynamic /* Distance | num */ left;
+  ProxyValue<dynamic /* Distance | num */ > get topProperty;
+  dynamic /* Distance | num */ top;
+  ProxyValue<dynamic /* Distance | num */ > get rightProperty;
+  dynamic /* Distance | num */ right;
+  ProxyValue<dynamic /* Distance | num */> get bottomProperty;
+  dynamic /* Distance | num */ bottom;
   ProxyValue<bool> get boldProperty;
   bool bold;
   ProxyValue<String> get fontFamilyProperty;
@@ -119,9 +119,9 @@ abstract class Container implements Widget, RemoveProcessor {
 }
 
 abstract class WidgetMixin implements Widget {
-  final widthProperty = ProxyValue<Distance>();
-  Distance get width => widthProperty.value;
-  set width(Distance value) => widthProperty.value = value;
+  final widthProperty = ProxyValue<dynamic>();
+  dynamic get width => widthProperty.value;
+  set width(dynamic value) => widthProperty.value = value;
 
   final minWidthProperty = ProxyValue<Distance>();
   Distance get minWidth => minWidthProperty.value;
@@ -131,9 +131,9 @@ abstract class WidgetMixin implements Widget {
   Distance get maxWidth => maxWidthProperty.value;
   set maxWidth(Distance value) => maxWidthProperty.value = value;
 
-  final heightProperty = ProxyValue<Distance>();
-  Distance get height => heightProperty.value;
-  set height(Distance value) => heightProperty.value = value;
+  final heightProperty = ProxyValue<dynamic>();
+  dynamic get height => heightProperty.value;
+  set height(dynamic value) => heightProperty.value = value;
 
   final minHeightProperty = ProxyValue<Distance>();
   Distance get minHeight => minHeightProperty.value;
@@ -175,21 +175,21 @@ abstract class WidgetMixin implements Widget {
   Distance get paddingBottom => paddingBottomProperty.value;
   set paddingBottom(Distance value) => paddingBottomProperty.value = value;
 
-  final leftProperty = ProxyValue<Distance>();
-  Distance get left => leftProperty.value;
-  set left(Distance value) => leftProperty.value = value;
+  final leftProperty = ProxyValue<dynamic>();
+  dynamic get left => leftProperty.value;
+  set left(dynamic value) => leftProperty.value = value;
 
-  final topProperty = ProxyValue<Distance>();
-  Distance get top => topProperty.value;
-  set top(Distance value) => topProperty.value = value;
+  final topProperty = ProxyValue<dynamic>();
+  dynamic get top => topProperty.value;
+  set top(dynamic value) => topProperty.value = value;
 
-  final rightProperty = ProxyValue<Distance>();
-  Distance get right => rightProperty.value;
-  set right(Distance value) => rightProperty.value = value;
+  final rightProperty = ProxyValue<dynamic>();
+  dynamic get right => rightProperty.value;
+  set right(dynamic value) => rightProperty.value = value;
 
-  final bottomProperty = ProxyValue<Distance>();
-  Distance get bottom => bottomProperty.value;
-  set bottom(Distance value) => bottomProperty.value = value;
+  final bottomProperty = ProxyValue<dynamic>();
+  dynamic get bottom => bottomProperty.value;
+  set bottom(dynamic value) => bottomProperty.value = value;
 
   final boldProperty = ProxyValue<bool>();
   bool get bold => boldProperty.value;

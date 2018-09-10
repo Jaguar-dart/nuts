@@ -161,7 +161,7 @@ class LabeledField extends Object
   final RxSet<String> classes;
   TextField labelField;
   View labelled;
-  Distance height;
+  dynamic height;
   VAlign vAlign;
 
   LabeledField(
