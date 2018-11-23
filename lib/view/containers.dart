@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:nuts/nuts.dart';
 
 class Box extends Object with WidgetMixin implements Container {
@@ -13,10 +14,23 @@ class Box extends Object with WidgetMixin implements Container {
     this.key,
     String class_,
     Iterable<String> classes,
-    /* Distance | Stream<Distance> | Reactive<Distance> */ width,
-    /* Distance | Stream<Distance> | Reactive<Distance> */ minWidth,
-    /* Distance | Stream<Distance> | Reactive<Distance> */ maxWidth,
-    /* Distance | Stream<Distance> | Reactive<Distance> */ height,
+
+    Distance width,
+    RxValue<Distance> widthRx,
+    Stream<Distance> widthStream,
+
+    Distance minWidth,
+    RxValue<Distance> minWidthRx,
+    Stream<Distance> minWidthStream,
+
+    Distance maxWidth,
+    RxValue<Distance> maxWidthRx,
+    Stream<Distance> maxWidthStream,
+
+    Distance height,
+    RxValue<Distance> heightRx,
+    Stream<Distance> heightStream,
+
     /* Distance | Stream<Distance> | Reactive<Distance> */ minHeight,
     /* Distance | Stream<Distance> | Reactive<Distance> */ maxHeight,
 
@@ -54,10 +68,10 @@ class Box extends Object with WidgetMixin implements Container {
             : RxSet<String>.union(classes, class_) {
     if (classes is RxSet) this.classes.addNonNull(class_);
     if (children is RxChildList) children.addNonNull(child);
-    widthProperty.bindOrSet(width);
-    minWidthProperty.bindOrSet(minWidth);
+    widthProperty.bindOrSet(width ?? widthRx ?? widthStream);
+    minWidthProperty.bindOrSet(minWidth ?? minWidthRx ?? minWidthStream);
     maxWidthProperty.bindOrSet(maxWidth);
-    heightProperty.bindOrSet(height);
+    heightProperty.bindOrSet(height ?? heightRx ?? heightStream);
     minHeightProperty.bindOrSet(minHeight);
     maxHeightProperty.bindOrSet(maxHeight);
     marginLeftProperty.bindOrSet(marginLeft);
@@ -86,6 +100,9 @@ class Box extends Object with WidgetMixin implements Container {
       }
     });
   }
+
+  /// Supplies a [func] to configure this view
+  void config(void func(Box box)) => func(this);
 
   void addChild(View v) => children.add(v);
   void addChildren(Iterable<View> v) => children.addAll(v);
